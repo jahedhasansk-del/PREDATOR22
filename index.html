@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>WinGo Pro Signal v5.0</title>
+<title>WinGo Pro Signal v6.0 - Reverse</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Courier New',monospace;background:#0a0e27;min-height:100vh;padding:15px;overflow-x:hidden}.matrix-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:.03;pointer-events:none}.container{max-width:700px;margin:0 auto;position:relative;z-index:1}.header{text-align:center;margin-bottom:20px;position:relative}.logo{font-size:28px;color:#00ff41;text-shadow:0 0 20px #00ff41;animation:glow 2s ease-in-out infinite;margin-bottom:8px}@keyframes glow{0%,100%{text-shadow:0 0 20px #00ff41}50%{text-shadow:0 0 30px #00ff41,0 0 60px #00ff41}}.title{color:#00ff41;font-size:13px;letter-spacing:2px;text-transform:uppercase}.scan-line{position:absolute;width:100%;height:2px;background:linear-gradient(90deg,transparent,#00ff41,transparent);animation:scan 3s linear infinite}@keyframes scan{0%{top:0}100%{top:100%}}.prediction-container{background:linear-gradient(135deg,rgba(0,255,65,.1) 0%,rgba(0,100,255,.1) 100%);border:2px solid #00ff41;border-radius:12px;overflow:hidden;box-shadow:0 0 30px rgba(0,255,65,.3);margin-bottom:20px;animation:borderPulse 2s ease-in-out infinite}@keyframes borderPulse{0%,100%{box-shadow:0 0 30px rgba(0,255,65,.3)}50%{box-shadow:0 0 50px rgba(0,255,65,.5)}}.prediction-header{padding:12px;text-align:center;background:linear-gradient(135deg,rgba(0,255,65,.2) 0%,rgba(0,100,255,.2) 100%);border-bottom:1px solid #00ff41}.prediction-header h3{color:#00ff41;font-size:15px;letter-spacing:2px;text-transform:uppercase}.prediction-content{padding:30px 20px;text-align:center}.prediction-result{font-size:56px;font-weight:bold;margin-bottom:15px;text-transform:uppercase;letter-spacing:4px;animation:fadeInScale 1s ease-out}@keyframes fadeInScale{0%{opacity:0;transform:scale(.5)}100%{opacity:1;transform:scale(1)}}.prediction-big{color:#ff0055;text-shadow:0 0 20px #ff0055}.prediction-small{color:#00ff41;text-shadow:0 0 20px #00ff41}.confidence-bar{width:180px;height:8px;background:rgba(255,255,255,.1);border-radius:4px;margin:15px auto;overflow:hidden}.confidence-fill{height:100%;background:linear-gradient(90deg,#ff0055,#ffaa00,#00ff41);border-radius:4px;animation:fillBar 2s ease-out;position:relative}@keyframes fillBar{0%{width:0%}}.confidence-fill::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shimmer 2s infinite}@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}.confidence-label{color:#00ff41;font-size:12px;margin-top:8px;letter-spacing:1px;text-transform:uppercase}.confidence-high{color:#00ff41;text-shadow:0 0 10px #00ff41}.confidence-low{color:#ff0055;text-shadow:0 0 10px #ff0055}.stats-container{background:linear-gradient(135deg,rgba(0,255,65,.05) 0%,rgba(0,100,255,.05) 100%);border:1px solid rgba(0,255,65,.3);border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 0 20px rgba(0,255,65,.2)}.stats-info{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.stat-item{text-align:center;padding:12px 8px;background:rgba(0,255,65,.05);border:1px solid rgba(0,255,65,.2);border-radius:8px;transition:all .3s ease}.stat-item:hover{transform:translateY(-3px);box-shadow:0 5px 20px rgba(0,255,65,.3)}.stat-label{font-size:9px;color:#00ff41;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;opacity:.7}.stat-value{font-size:24px;font-weight:bold;color:#00ff41;text-shadow:0 0 10px #00ff41}.stat-win{color:#00ff41;text-shadow:0 0 15px #00ff41}.stat-loss{color:#ff0055;text-shadow:0 0 15px #ff0055}.stat-streak{color:#ffaa00;text-shadow:0 0 15px #ffaa00}.table-container{background:linear-gradient(135deg,rgba(0,255,65,.05) 0%,rgba(0,100,255,.05) 100%);border:1px solid rgba(0,255,65,.3);border-radius:12px;overflow:hidden;box-shadow:0 0 20px rgba(0,255,65,.2)}table{width:100%;border-collapse:collapse}thead{background:linear-gradient(135deg,rgba(0,255,65,.2) 0%,rgba(0,100,255,.2) 100%)}th{padding:12px 6px;text-align:center;font-weight:600;color:#00ff41;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #00ff41}tbody tr{background:rgba(0,0,0,.3);transition:all .3s ease;border-bottom:1px solid rgba(0,255,65,.1)}tbody tr:hover{background:rgba(0,255,65,.1);transform:scale(1.01);box-shadow:0 0 15px rgba(0,255,65,.3)}td{padding:10px 6px;text-align:center;color:#00ff41;font-size:11px}.period-cell{font-family:'Courier New',monospace;font-size:10px;opacity:.7}.number-cell{font-size:22px;font-weight:bold}.color-cell{display:flex;justify-content:center;align-items:center;gap:4px}.color-dot{width:14px;height:14px;border-radius:50%;display:inline-block;border:2px solid rgba(0,255,65,.3);animation:dotPulse 2s infinite}@keyframes dotPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}.red{background:#ff0055;box-shadow:0 0 8px #ff0055}.green{background:#00ff41;box-shadow:0 0 8px #00ff41}.violet{background:#aa00ff;box-shadow:0 0 8px #aa00ff}.result-cell{font-weight:bold;font-size:11px;padding:5px 8px;border-radius:4px}.result-win{color:#00ff41;background:rgba(0,255,65,.2);border:1px solid #00ff41;text-shadow:0 0 5px #00ff41}.result-loss{color:#ff0055;background:rgba(255,0,85,.2);border:1px solid #ff0055;text-shadow:0 0 5px #ff0055}.time-display{background:rgba(0,255,65,.1);padding:15px 30px;border-radius:12px;display:inline-block;margin-top:15px;border:1px solid rgba(0,255,65,.3);box-shadow:0 0 20px rgba(0,255,65,.2)}.current-time{font-size:28px;font-weight:bold;color:#00ff41;font-family:'Courier New',monospace;letter-spacing:2px;text-shadow:0 0 20px #00ff41}.seconds-highlight{color:#ff0055;font-size:32px;animation:pulse 1s infinite;text-shadow:0 0 20px #ff0055}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}.refresh-btn{position:fixed;bottom:25px;right:25px;background:linear-gradient(135deg,#00ff41 0%,#00aaff 100%);color:#0a0e27;border:none;padding:14px 24px;border-radius:40px;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 0 30px rgba(0,255,65,.5);display:flex;align-items:center;gap:8px;transition:all .3s;z-index:1000;text-transform:uppercase;letter-spacing:1.5px}.refresh-btn:hover{transform:scale(1.08);box-shadow:0 0 50px rgba(0,255,65,.8)}.refresh-btn:active{transform:scale(.95)}.refresh-icon{font-size:18px}.refresh-icon.spinning{animation:spin .5s linear}@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}.loading{text-align:center;padding:15px;color:#00ff41;animation:blink 1s infinite}@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}.update-time{text-align:center;margin-top:15px}.warning-text{font-size:12px;color:#ff0055;margin-top:8px;text-shadow:0 0 10px #ff0055}@media (max-width:600px){.logo{font-size:22px}.title{font-size:10px;letter-spacing:1px}.stats-info{grid-template-columns:repeat(2,1fr);gap:10px}.prediction-result{font-size:40px;letter-spacing:2px}th,td{padding:8px 4px;font-size:10px}.number-cell{font-size:18px}.refresh-btn{bottom:15px;right:15px;padding:12px 20px;font-size:12px}.current-time{font-size:22px}.stat-value{font-size:20px}}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Courier New',monospace;background:#0a0e27;min-height:100vh;padding:15px;overflow-x:hidden}.matrix-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:.03;pointer-events:none}.container{max-width:700px;margin:0 auto;position:relative;z-index:1}.header{text-align:center;margin-bottom:20px;position:relative}.logo{font-size:28px;color:#00ff41;text-shadow:0 0 20px #00ff41;animation:glow 2s ease-in-out infinite;margin-bottom:8px}@keyframes glow{0%,100%{text-shadow:0 0 20px #00ff41}50%{text-shadow:0 0 30px #00ff41,0 0 60px #00ff41}}.title{color:#00ff41;font-size:13px;letter-spacing:2px;text-transform:uppercase}.scan-line{position:absolute;width:100%;height:2px;background:linear-gradient(90deg,transparent,#00ff41,transparent);animation:scan 3s linear infinite}@keyframes scan{0%{top:0}100%{top:100%}}.prediction-container{background:linear-gradient(135deg,rgba(0,255,65,.1) 0%,rgba(0,100,255,.1) 100%);border:2px solid #00ff41;border-radius:12px;overflow:hidden;box-shadow:0 0 30px rgba(0,255,65,.3);margin-bottom:20px;animation:borderPulse 2s ease-in-out infinite}@keyframes borderPulse{0%,100%{box-shadow:0 0 30px rgba(0,255,65,.3)}50%{box-shadow:0 0 50px rgba(0,255,65,.5)}}.prediction-header{padding:12px;text-align:center;background:linear-gradient(135deg,rgba(0,255,65,.2) 0%,rgba(0,100,255,.2) 100%);border-bottom:1px solid #00ff41}.prediction-header h3{color:#00ff41;font-size:15px;letter-spacing:2px;text-transform:uppercase}.prediction-content{padding:30px 20px;text-align:center}.prediction-result{font-size:56px;font-weight:bold;margin-bottom:15px;text-transform:uppercase;letter-spacing:4px;animation:fadeInScale 1s ease-out}@keyframes fadeInScale{0%{opacity:0;transform:scale(.5)}100%{opacity:1;transform:scale(1)}}.prediction-big{color:#ff0055;text-shadow:0 0 20px #ff0055}.prediction-small{color:#00ff41;text-shadow:0 0 20px #00ff41}.confidence-bar{width:180px;height:8px;background:rgba(255,255,255,.1);border-radius:4px;margin:15px auto;overflow:hidden}.confidence-fill{height:100%;background:linear-gradient(90deg,#ff0055,#ffaa00,#00ff41);border-radius:4px;animation:fillBar 2s ease-out;position:relative}@keyframes fillBar{0%{width:0%}}.confidence-fill::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shimmer 2s infinite}@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}.confidence-label{color:#00ff41;font-size:12px;margin-top:8px;letter-spacing:1px;text-transform:uppercase}.confidence-high{color:#00ff41;text-shadow:0 0 10px #00ff41}.confidence-low{color:#ff0055;text-shadow:0 0 10px #ff0055}.stats-container{background:linear-gradient(135deg,rgba(0,255,65,.05) 0%,rgba(0,100,255,.05) 100%);border:1px solid rgba(0,255,65,.3);border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 0 20px rgba(0,255,65,.2)}.stats-info{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.stat-item{text-align:center;padding:12px 8px;background:rgba(0,255,65,.05);border:1px solid rgba(0,255,65,.2);border-radius:8px;transition:all .3s ease}.stat-item:hover{transform:translateY(-3px);box-shadow:0 5px 20px rgba(0,255,65,.3)}.stat-label{font-size:9px;color:#00ff41;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;opacity:.7}.stat-value{font-size:24px;font-weight:bold;color:#00ff41;text-shadow:0 0 10px #00ff41}.stat-win{color:#00ff41;text-shadow:0 0 15px #00ff41}.stat-loss{color:#ff0055;text-shadow:0 0 15px #ff0055}.stat-streak{color:#ffaa00;text-shadow:0 0 15px #ffaa00}.table-container{background:linear-gradient(135deg,rgba(0,255,65,.05) 0%,rgba(0,100,255,.05) 100%);border:1px solid rgba(0,255,65,.3);border-radius:12px;overflow:hidden;box-shadow:0 0 20px rgba(0,255,65,.2)}table{width:100%;border-collapse:collapse}thead{background:linear-gradient(135deg,rgba(0,255,65,.2) 0%,rgba(0,100,255,.2) 100%)}th{padding:12px 6px;text-align:center;font-weight:600;color:#00ff41;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #00ff41}tbody tr{background:rgba(0,0,0,.3);transition:all .3s ease;border-bottom:1px solid rgba(0,255,65,.1)}tbody tr:hover{background:rgba(0,255,65,.1);transform:scale(1.01);box-shadow:0 0 15px rgba(0,255,65,.3)}td{padding:10px 6px;text-align:center;color:#00ff41;font-size:11px}.period-cell{font-family:'Courier New',monospace;font-size:10px;opacity:.7}.number-cell{font-size:22px;font-weight:bold}.color-cell{display:flex;justify-content:center;align-items:center;gap:4px}.color-dot{width:14px;height:14px;border-radius:50%;display:inline-block;border:2px solid rgba(0,255,65,.3);animation:dotPulse 2s infinite}@keyframes dotPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}.red{background:#ff0055;box-shadow:0 0 8px #ff0055}.green{background:#00ff41;box-shadow:0 0 8px #00ff41}.violet{background:#aa00ff;box-shadow:0 0 8px #aa00ff}.result-cell{font-weight:bold;font-size:11px;padding:5px 8px;border-radius:4px}.result-win{color:#00ff41;background:rgba(0,255,65,.2);border:1px solid #00ff41;text-shadow:0 0 5px #00ff41}.result-loss{color:#ff0055;background:rgba(255,0,85,.2);border:1px solid #ff0055;text-shadow:0 0 5px #ff0055}.time-display{background:rgba(0,255,65,.1);padding:15px 30px;border-radius:12px;display:inline-block;margin-top:15px;border:1px solid rgba(0,255,65,.3);box-shadow:0 0 20px rgba(0,255,65,.2)}.current-time{font-size:28px;font-weight:bold;color:#00ff41;font-family:'Courier New',monospace;letter-spacing:2px;text-shadow:0 0 20px #00ff41}.seconds-highlight{color:#ff0055;font-size:32px;animation:pulse 1s infinite;text-shadow:0 0 20px #ff0055}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}.refresh-btn{position:fixed;bottom:25px;right:25px;background:linear-gradient(135deg,#00ff41 0%,#00aaff 100%);color:#0a0e27;border:none;padding:14px 24px;border-radius:40px;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 0 30px rgba(0,255,65,.5);display:flex;align-items:center;gap:8px;transition:all .3s;z-index:1000;text-transform:uppercase;letter-spacing:1.5px}.refresh-btn:hover{transform:scale(1.08);box-shadow:0 0 50px rgba(0,255,65,.8)}.refresh-btn:active{transform:scale(.95)}.refresh-icon{font-size:18px}.refresh-icon.spinning{animation:spin .5s linear}@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}.loading{text-align:center;padding:15px;color:#00ff41;animation:blink 1s infinite}@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}.update-time{text-align:center;margin-top:15px}.warning-text{font-size:12px;color:#ff0055;margin-top:8px;text-shadow:0 0 10px #ff0055}.reverse-mode{font-size:11px;color:#ffaa00;margin-top:5px;text-shadow:0 0 10px #ffaa00}@media (max-width:600px){.logo{font-size:22px}.title{font-size:10px;letter-spacing:1px}.stats-info{grid-template-columns:repeat(2,1fr);gap:10px}.prediction-result{font-size:40px;letter-spacing:2px}th,td{padding:8px 4px;font-size:10px}.number-cell{font-size:18px}.refresh-btn{bottom:15px;right:15px;padding:12px 20px;font-size:12px}.current-time{font-size:22px}.stat-value{font-size:20px}}
 </style>
 </head>
 <body>
@@ -14,7 +14,7 @@
 <div class="header">
 <div class="scan-line"></div>
 <div class="logo">⚡ WINGO PRO</div>
-<div class="title">SIGNAL ANALYZER v5.0 - Smart Adaptive</div>
+<div class="title">SIGNAL ANALYZER v6.0 - REVERSE MODE</div>
 </div>
 <div class="prediction-container">
 <div class="prediction-header"><h3>🔮 NEXT PREDICTION</h3></div>
@@ -45,7 +45,8 @@
 <button class="refresh-btn" onclick="_r()"><span class="refresh-icon" id="ri">⟳</span><span>Refresh</span></button>
 <script>
 const c=document.getElementById('matrix'),ctx=c.getContext('2d');c.width=window.innerWidth;c.height=window.innerHeight;const chars='01',fontSize=14,cols=c.width/fontSize,drops=[];for(let i=0;i<cols;i++)drops[i]=1;function drawMatrix(){ctx.fillStyle='rgba(10,14,39,0.05)';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#00ff41';ctx.font=fontSize+'px monospace';for(let i=0;i<drops.length;i++){const t=chars[Math.floor(Math.random()*chars.length)];ctx.fillText(t,i*fontSize,drops[i]*fontSize);if(drops[i]*fontSize>c.height&&Math.random()>0.975)drops[i]=0;drops[i]++}}setInterval(drawMatrix,50);
-  (function(){
+Part 2 - JavaScript with REVERSE Logic
+(function(){
 const _0x4a=['Big','Small','win','loss'];
 let _p=null,_c=null,_h=[],_lp=null,_ct,_consLoss=0,_lastPredType=null;
 
@@ -73,7 +74,7 @@ return a
 };
 
 const _a=d=>{
-if(d.length<3)return{p:_0x4a[0],c:55};
+if(d.length<3)return{p:_0x4a[1],c:55};
 
 let recentLosses=0;
 if(_h.length>=3){
@@ -83,27 +84,18 @@ else break
 }
 }
 
-let cs=0,cb=0,lcs=0,lcb=0,maxStreak=0,maxStreakType='';
+let cs=0,cb=0,lcs=0,lcb=0;
 for(let i=0;i<d.length;i++){
 if(d[i]===_0x4a[1]){
 cs++;
-if(cb>0){
-lcb=cb;
-if(cb>maxStreak){maxStreak=cb;maxStreakType=_0x4a[0]}
-}
+if(cb>0)lcb=cb;
 cb=0
 }else{
 cb++;
-if(cs>0){
-lcs=cs;
-if(cs>maxStreak){maxStreak=cs;maxStreakType=_0x4a[1]}
-}
+if(cs>0)lcs=cs;
 cs=0
 }
 }
-
-if(cb>0&&cb>maxStreak){maxStreak=cb;maxStreakType=_0x4a[0]}
-if(cs>0&&cs>maxStreak){maxStreak=cs;maxStreakType=_0x4a[1]}
 
 const lastWasBig=d[0]===_0x4a[0];
 let isAlternating=true;
@@ -176,128 +168,128 @@ return{p:pred,c:Math.round(conf)}
 }
 
 if(isAlternating&&alternateCount>=4){
-pred=lastWasBig?_0x4a[1]:_0x4a[0];
+pred=lastWasBig?_0x4a[0]:_0x4a[1];
 conf=88+Math.min(alternateCount*2,10);
 return{p:pred,c:Math.min(conf,97)}
 }
 
 if(hasLongStreak&&longStreakSmall>longStreakBig+5){
-pred=_0x4a[0];
+pred=_0x4a[1];
 conf=94+Math.min(longStreakSmall-longStreakBig-5,4);
 return{p:pred,c:Math.min(conf,98)}
 }else if(hasLongStreak&&longStreakBig>longStreakSmall+5){
-pred=_0x4a[1];
+pred=_0x4a[0];
 conf=94+Math.min(longStreakBig-longStreakSmall-5,4);
 return{p:pred,c:Math.min(conf,98)}
 }
 
 if(cs>=8){
-pred=_0x4a[0];
+pred=_0x4a[1];
 conf=95+Math.min((cs-8)*1.5,3);
 return{p:pred,c:Math.min(conf,98)}
 }else if(cb>=8){
-pred=_0x4a[1];
+pred=_0x4a[0];
 conf=95+Math.min((cb-8)*1.5,3);
 return{p:pred,c:Math.min(conf,98)}
 }
 
 if(cs>=7){
-pred=_0x4a[0];
+pred=_0x4a[1];
 conf=92+Math.min((cs-7)*2,6);
 return{p:pred,c:Math.min(conf,98)}
 }else if(cb>=7){
-pred=_0x4a[1];
+pred=_0x4a[0];
 conf=92+Math.min((cb-7)*2,6);
 return{p:pred,c:Math.min(conf,98)}
 }
 
 if(cs>=5&&cs<=6){
-pred=_0x4a[0];
+pred=_0x4a[1];
 conf=82+(cs*3)+(isHeavySmall?5:0);
 return{p:pred,c:Math.min(conf,94)}
 }else if(cb>=5&&cb<=6){
-pred=_0x4a[1];
+pred=_0x4a[0];
 conf=82+(cb*3)+(isHeavyBig?5:0);
 return{p:pred,c:Math.min(conf,94)}
 }
 
 if(cs===4){
 if(isHeavySmall||lcs>=4){
-pred=_0x4a[0];
+pred=_0x4a[1];
 conf=78+(imbalance*2)+(lcs>=4?6:0);
 return{p:pred,c:Math.min(conf,91)}
 }else{
-pred=_0x4a[0];
+pred=_0x4a[1];
 conf=75+Math.random()*8;
 return{p:pred,c:Math.round(conf)}
 }
 }else if(cb===4){
 if(isHeavyBig||lcb>=4){
-pred=_0x4a[1];
+pred=_0x4a[0];
 conf=78+(imbalance*2)+(lcb>=4?6:0);
 return{p:pred,c:Math.min(conf,91)}
 }else{
-pred=_0x4a[1];
+pred=_0x4a[0];
 conf=75+Math.random()*8;
 return{p:pred,c:Math.round(conf)}
 }
 }
 
 if(isAlternating&&alternateCount===3){
-pred=lastWasBig?_0x4a[1]:_0x4a[0];
+pred=lastWasBig?_0x4a[0]:_0x4a[1];
 conf=76+Math.random()*6;
 return{p:pred,c:Math.round(conf)}
 }
 
 if(wavePattern){
-pred=d[0]===d[1]?(d[0]===_0x4a[0]?_0x4a[1]:_0x4a[0]):d[0];
+pred=d[0]===d[1]?(d[0]===_0x4a[0]?_0x4a[0]:_0x4a[1]):d[0]==='Big'?_0x4a[1]:_0x4a[0];
 conf=72+Math.random()*8;
 return{p:pred,c:Math.round(conf)}
 }
 
 if(cs===3){
-pred=_0x4a[0];
+pred=_0x4a[1];
 conf=lcb>=3?74+Math.random()*8:68+Math.random()*10
 }else if(cb===3){
-pred=_0x4a[1];
+pred=_0x4a[0];
 conf=lcs>=3?74+Math.random()*8:68+Math.random()*10
 }else if(cs===2){
-pred=_0x4a[0];
+pred=_0x4a[1];
 conf=momentum>=2?70+Math.random()*8:62+Math.random()*10
 }else if(cb===2){
-pred=_0x4a[1];
+pred=_0x4a[0];
 conf=momentum<=-2?70+Math.random()*8:62+Math.random()*10
 }else if(cs===1){
 if(lcb>=4){
-pred=_0x4a[1];
+pred=_0x4a[0];
 conf=64+Math.random()*8
 }else if(lcb===3){
-pred=_0x4a[0];
+pred=_0x4a[1];
 conf=58+Math.random()*8
 }else{
-pred=isHeavySmall?_0x4a[0]:_0x4a[1];
+pred=isHeavySmall?_0x4a[1]:_0x4a[0];
 conf=54+Math.random()*8
 }
 }else if(cb===1){
 if(lcs>=4){
-pred=_0x4a[0];
+pred=_0x4a[1];
 conf=64+Math.random()*8
 }else if(lcs===3){
-pred=_0x4a[1];
+pred=_0x4a[0];
 conf=58+Math.random()*8
 }else{
-pred=isHeavyBig?_0x4a[1]:_0x4a[0];
+pred=isHeavyBig?_0x4a[0]:_0x4a[1];
 conf=54+Math.random()*8
 }
 }else{
 if(isHeavySmall){
-pred=_0x4a[0];
-conf=58+imbalance*3
-}else if(isHeavyBig){
 pred=_0x4a[1];
 conf=58+imbalance*3
+}else if(isHeavyBig){
+pred=_0x4a[0];
+conf=58+imbalance*3
 }else{
-pred=lastWasBig?_0x4a[1]:_0x4a[0];
+pred=lastWasBig?_0x4a[0]:_0x4a[1];
 conf=52+Math.random()*10
 }
 }
@@ -306,8 +298,8 @@ if(d.length>=8){
 const last8=d.slice(0,8);
 const b8=last8.filter(x=>x===_0x4a[0]).length;
 const s8=last8.filter(x=>x===_0x4a[1]).length;
-if(pred===_0x4a[0]&&s8>b8+2)conf+=8;
-if(pred===_0x4a[1]&&b8>s8+2)conf+=8
+if(pred===_0x4a[1]&&s8>b8+2)conf+=8;
+if(pred===_0x4a[0]&&b8>s8+2)conf+=8
 }
 
 conf=Math.min(98,Math.max(48,Math.round(conf)));
@@ -401,8 +393,9 @@ _lp=tp
 const cr=document.getElementById("currPred"),cb=document.getElementById("confBar"),cl=document.getElementById("confLabel");
 
 let displayText=`<span class="prediction-${_c.p.toLowerCase()}">${_c.p}</span>`;
+displayText+=`<div class="reverse-mode">🔄 REVERSE MODE ACTIVE</div>`;
 if(_consLoss>=2){
-displayText+=`<div class="warning-text" style="animation:blink 1s infinite">⚠️ ${_consLoss} Loss - Strategy Shifted</div>`
+displayText+=`<div class="warning-text" style="animation:blink 1s infinite">⚠️ ${_consLoss} Loss - Adjusting</div>`
 }
 cr.innerHTML=displayText;
 
@@ -495,4 +488,4 @@ _s()
 })();
 </script>
 </body>
-</html
+</html>
