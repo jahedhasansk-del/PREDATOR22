@@ -45,8 +45,7 @@
 <button class="refresh-btn" onclick="_r()"><span class="refresh-icon" id="ri">⟳</span><span>Refresh</span></button>
 <script>
 const c=document.getElementById('matrix'),ctx=c.getContext('2d');c.width=window.innerWidth;c.height=window.innerHeight;const chars='01',fontSize=14,cols=c.width/fontSize,drops=[];for(let i=0;i<cols;i++)drops[i]=1;function drawMatrix(){ctx.fillStyle='rgba(10,14,39,0.05)';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#00ff41';ctx.font=fontSize+'px monospace';for(let i=0;i<drops.length;i++){const t=chars[Math.floor(Math.random()*chars.length)];ctx.fillText(t,i*fontSize,drops[i]*fontSize);if(drops[i]*fontSize>c.height&&Math.random()>0.975)drops[i]=0;drops[i]++}}setInterval(drawMatrix,50);
-
-(function(){
+  (function(){
 const _0x4a=['Big','Small','win','loss'];
 let _p=null,_c=null,_h=[],_lp=null,_ct,_consLoss=0,_lastPredType=null;
 
@@ -482,4 +481,18 @@ document.getElementById('lc').textContent=lc;
 document.getElementById('tc').textContent=to;
 document.getElementById('wr').textContent=wrt+'%';
 document.getElementById('mw').textContent=st.mw;
-document.getElementById('ml').text
+document.getElementById('ml').textContent=st.ml
+
+}catch(e){
+const _em=_d('5b204552524f52205d');
+document.getElementById("tb").innerHTML=`<tr><td colspan="5" class="loading">${_em}</td></tr>`
+}
+};
+
+_l();
+_s()
+
+})();
+</script>
+</body>
+</html
