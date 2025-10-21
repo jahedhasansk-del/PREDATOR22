@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WinGo 3M Prediction (20 History)</title>
+<title>WinGo 3M Prediction (Live 20 History)</title>
 <style>
   body {
     background: #0b0b0b;
@@ -38,14 +38,11 @@
   .ok {
     color: #00ff00;
   }
-  .wait {
-    color: orange;
-  }
 </style>
 </head>
 <body>
-  <h1>WinGo 3M Prediction Panel</h1>
-  <p id="status" class="wait">WAITING FOR DATA...</p>
+  <h1>WinGo 3M Prediction (Live 20 History)</h1>
+  <p id="status" class="pred">Loading...</p>
   <table>
     <thead>
       <tr>
@@ -73,14 +70,14 @@ async function loadData() {
       result: Number(x.number) >= 5 ? 'BIG' : 'SMALL'
     }));
 
-    // নতুন ডেটা যুক্ত করো, পুরনো বাদ দিও না
+    // নতুন ডেটা যুক্ত করো (পুরনো মুছবে না)
     result.forEach(r => {
       if (!historyData.find(h => h.issue === r.issue)) {
         historyData.unshift(r);
       }
     });
 
-    // সর্বোচ্চ ২০ রাউন্ড পর্যন্ত রাখো
+    // সর্বোচ্চ ২০টা পর্যন্ত রাখো
     if (historyData.length > 20) historyData = historyData.slice(0, 20);
 
     updateTable();
@@ -93,22 +90,21 @@ async function loadData() {
 // Prediction Logic
 function makePrediction() {
   const status = document.getElementById('status');
-  if (historyData.length < 20) {
-    status.textContent = "WAITING FOR DATA...";
-    status.className = "wait";
+  if (historyData.length < 2) {
+    status.textContent = "Collecting history...";
     return;
   }
 
   const lastTwo = historyData.slice(0, 2);
   let prediction = "WAIT";
+
   if (lastTwo[0].result === lastTwo[1].result) {
     prediction = lastTwo[0].result === "BIG" ? "SMALL" : "BIG"; // reversal
   } else {
     prediction = lastTwo[0].result; // momentum
   }
 
-  status.textContent = `Next Prediction: ${prediction}`;
-  status.className = "pred";
+  status.textContent = `Next Prediction ➜ ${prediction}`;
 }
 
 // টেবিল আপডেট
@@ -128,9 +124,10 @@ function updateTable() {
   });
 }
 
-// প্রতি 3 মিনিটে 2 সেকেন্ড পর ডেটা আপডেট
-setInterval(loadData, 182000); // (3 মিনিট + 2 সেকেন্ড)
+// প্রতি 3 মিনিট 2 সেকেন্ড পর আপডেট (WinGo 3M = প্রতি 3 মিনিটে নতুন রাউন্ড)
+setInterval(loadData, 182000);
 loadData();
 </script>
 </body>
 </html>
+
