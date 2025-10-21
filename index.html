@@ -3,17 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WinGo 3M Prediction (Live 20 History)</title>
+<title>WinGo 3M Live Prediction</title>
 <style>
   body {
     background: #0b0b0b;
     color: #00ffcc;
     font-family: monospace;
-    padding: 10px;
     text-align: center;
+    padding: 10px;
   }
   h1 {
     color: #ffcc00;
+    margin-bottom: 10px;
   }
   table {
     width: 100%;
@@ -22,27 +23,27 @@
   }
   th, td {
     border: 1px solid #00ffcc;
-    padding: 6px;
+    padding: 5px;
     text-align: center;
   }
   th {
     background: #111;
   }
   tr:nth-child(even) {
-    background: #111;
+    background: #141414;
   }
   .pred {
-    color: #ff0066;
+    color: #ff3399;
     font-weight: bold;
   }
-  .ok {
-    color: #00ff00;
-  }
+  .ok { color: #00ff00; }
+  .wrong { color: #ff3300; }
 </style>
 </head>
 <body>
-  <h1>WinGo 3M Prediction (Live 20 History)</h1>
-  <p id="status" class="pred">Loading...</p>
+  <h1>WinGo 3M Prediction</h1>
+  <div id="prediction" class="pred">Loading...</div>
+
   <table>
     <thead>
       <tr>
@@ -59,75 +60,86 @@
 <script>
 const API_URL = "https://draw.ar-lottery01.com/WinGo/WinGo_3M/GetHistoryIssuePage.json";
 let historyData = [];
+let lastPrediction = null;
 
-async function loadData() {
+// মূল ফাংশন
+async function fetchData() {
   try {
     const res = await fetch(`${API_URL}?ts=${Date.now()}`);
     const data = await res.json();
-    const result = data.data.slice(0, 20).map(x => ({
-      issue: x.issue,
-      number: Number(x.number),
-      result: Number(x.number) >= 5 ? 'BIG' : 'SMALL'
-    }));
+    const rounds = data.data;
 
-    // নতুন ডেটা যুক্ত করো (পুরনো মুছবে না)
-    result.forEach(r => {
+    if (!rounds || !Array.isArray(rounds)) return;
+
+    // নতুন ডেটা শুধু যোগ করা হবে
+    rounds.forEach(r => {
       if (!historyData.find(h => h.issue === r.issue)) {
-        historyData.unshift(r);
+        historyData.unshift({
+          issue: r.issue,
+          number: Number(r.number),
+          result: Number(r.number) >= 5 ? "BIG" : "SMALL"
+        });
       }
     });
 
-    // সর্বোচ্চ ২০টা পর্যন্ত রাখো
+    // সর্বোচ্চ ২০ টা হিস্ট্রি রাখো
     if (historyData.length > 20) historyData = historyData.slice(0, 20);
 
-    updateTable();
+    // নতুন হিস্ট্রি টেবিলে দেখাও
+    renderTable();
+
+    // প্রেডিকশন আপডেট করো
     makePrediction();
+
   } catch (err) {
-    console.error("Error:", err);
+    console.error("Fetch Error:", err);
   }
 }
 
-// Prediction Logic
+// প্রেডিকশন লজিক
 function makePrediction() {
-  const status = document.getElementById('status');
-  if (historyData.length < 2) {
-    status.textContent = "Collecting history...";
-    return;
-  }
+  if (historyData.length < 2) return;
 
-  const lastTwo = historyData.slice(0, 2);
-  let prediction = "WAIT";
+  const [last, prev] = historyData;
+  let prediction;
 
-  if (lastTwo[0].result === lastTwo[1].result) {
-    prediction = lastTwo[0].result === "BIG" ? "SMALL" : "BIG"; // reversal
+  // Momentum & Reversal Rule
+  if (last.result === prev.result) {
+    prediction = last.result === "BIG" ? "SMALL" : "BIG"; // Reversal
   } else {
-    prediction = lastTwo[0].result; // momentum
+    prediction = last.result; // Momentum
   }
 
-  status.textContent = `Next Prediction ➜ ${prediction}`;
+  lastPrediction = prediction;
+
+  document.getElementById("prediction").innerHTML =
+    `Next Prediction ➜ <b>${prediction}</b>`;
 }
 
 // টেবিল আপডেট
-function updateTable() {
-  const tbody = document.getElementById('history');
+function renderTable() {
+  const tbody = document.getElementById("history");
   tbody.innerHTML = "";
+
   historyData.forEach((h, i) => {
-    const tr = document.createElement('tr');
+    const predicted = (i > 0 && historyData[i - 1].prediction) || lastPrediction;
+    const isCorrect = predicted && predicted === h.result;
+
+    const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${h.issue}</td>
       <td>${h.number}</td>
       <td>${h.result}</td>
-      <td>${i === 0 ? '<b class="pred">NEW</b>' : ''}</td>
-      <td>${i === 0 ? 'LIVE' : ''}</td>
+      <td>${i === 0 ? `<b class="pred">${lastPrediction || "-"}</b>` : predicted || "-"}</td>
+      <td>${i === 0 ? "LIVE" : (isCorrect ? '<span class="ok">✅</span>' : '<span class="wrong">❌</span>')}</td>
     `;
     tbody.appendChild(tr);
   });
 }
 
-// প্রতি 3 মিনিট 2 সেকেন্ড পর আপডেট (WinGo 3M = প্রতি 3 মিনিটে নতুন রাউন্ড)
-setInterval(loadData, 182000);
-loadData();
+// প্রতি 3 মিনিট 2 সেকেন্ড পর রিফ্রেশ হবে
+setInterval(fetchData, 182000);
+fetchData();
 </script>
 </body>
 </html>
-
