@@ -170,6 +170,15 @@
             margin: 15px 0;
         }
 
+        .success {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #0f0;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
         .footer {
             text-align: center;
             padding: 15px;
@@ -250,6 +259,7 @@
 
     <script>
         let data = [];
+        let isRealData = false;
 
         function getColorClass(n) {
             if (n === 0 || n === 5) return 'violet';
@@ -270,30 +280,97 @@
             content.innerHTML = '<div class="loading">⏳ LOADING...</div>';
 
             try {
-                const [r1, r2] = await Promise.all([
-                    fetch(`https://draw.ar-lottery01.com/WinGo/WinGo_3M.json?ts=${Date.now()}`),
-                    fetch(`https://api.ar-lottery01.com/api/Lottery/GetHistoryIssuePage?gameCode=WinGo_3M&pageNo=2&pageSize=5&language=en&random=${Math.random()*1e9|0}&signature=198C060C3EFA83B1030719D2ECA2295F&timestamp=${Date.now()}`)
-                ]);
+                // বিকল্প API URLs চেষ্টা করা হচ্ছে
+                const urls = [
+                    `https://draw.ar-lottery01.com/WinGo/WinGo_3M.json?ts=${Date.now()}`,
+                    `https://api.ar-lottery01.com/api/Lottery/GetNoaverageEmerdList?typeId=2&language=en&random=${Math.random()*1e9|0}&signature=198C060C3EFA83B1030719D2ECA2295F&timestamp=${Date.now()}`,
+                    `https://api.ar-lottery01.com/api/Lottery/GetHistoryIssuePage?gameCode=WinGo_3M&pageNo=1&pageSize=15&language=en&random=${Math.random()*1e9|0}&signature=198C060C3EFA83B1030719D2ECA2295F&timestamp=${Date.now()}`
+                ];
 
-                const d1 = await r1.json();
-                const d2 = await r2.json();
+                let fetchedData = [];
+                let apiSuccess = false;
 
-                data = [...(d1 || []).slice(0, 10), ...(d2?.data?.list || []).slice(0, 5)].slice(0, 15);
+                for (let url of urls) {
+                    try {
+                        const response = await fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                            },
+                            mode: 'cors'
+                        });
 
-                if (data.length) {
+                        if (response.ok) {
+                            const jsonData = await response.json();
+                            
+                            // বিভিন্ন API response format handle করা
+                            if (Array.isArray(jsonData)) {
+                                fetchedData = [...fetchedData, ...jsonData];
+                            } else if (jsonData?.data?.list) {
+                                fetchedData = [...fetchedData, ...jsonData.data.list];
+                            } else if (jsonData?.data) {
+                                if (Array.isArray(jsonData.data)) {
+                                    fetchedData = [...fetchedData, ...jsonData.data];
+                                }
+                            }
+
+                            if (fetchedData.length >= 15) {
+                                apiSuccess = true;
+                                break;
+                            }
+                        }
+                    } catch (e) {
+                        console.log(`Failed to fetch from ${url}:`, e.message);
+                        continue;
+                    }
+                }
+
+                data = fetchedData.slice(0, 15);
+
+                if (data.length && apiSuccess) {
+                    isRealData = true;
                     showTable();
                     calcStats();
                     stats.style.display = 'grid';
+                    err.innerHTML = '<div class="success">✅ API থেকে সফলভাবে ডেটা লোড হয়েছে!</div>';
+                    setTimeout(() => { err.innerHTML = ''; }, 3000);
                 } else {
-                    content.innerHTML = '<div class="loading">❌ NO DATA</div>';
+                    // যদি API কাজ না করে তাহলে ডেমো ডেটা দেখানো
+                    isRealData = false;
+                    generateDemoData();
+                    err.innerHTML = '<div class="error">⚠️ API থেকে ডেটা আসছে না। ডেমো ডেটা দেখানো হচ্ছে।<br><small>সম্ভাব্য কারণ: CORS Policy, Network Error, বা API Down</small></div>';
                 }
 
                 document.getElementById('time').textContent = new Date().toLocaleTimeString('bn-BD');
 
             } catch (e) {
-                err.innerHTML = `<div class="error">⚠️ ERROR: ${e.message}</div>`;
-                console.error(e);
+                err.innerHTML = `<div class="error">⚠️ ERROR: ${e.message}<br><small>API এ সমস্যা হতে পারে। কিছুক্ষণ পর আবার চেষ্টা করুন।</small></div>`;
+                console.error('Full error:', e);
+                isRealData = false;
+                generateDemoData();
             }
+        }
+
+        function generateDemoData() {
+            // ডেমো ডেটা তৈরি করা (বাস্তবসম্মত)
+            data = [];
+            const now = Date.now();
+            for (let i = 0; i < 15; i++) {
+                const num = Math.floor(Math.random() * 10);
+                const timestamp = now - (i * 180000); // প্রতি 3 মিনিট
+                const date = new Date(timestamp);
+                const period = `${date.getFullYear()}${String(date.getMonth()+1).padStart(2,'0')}${String(date.getDate()).padStart(2,'0')}${String(Math.floor(timestamp/1000)).slice(-4)}`;
+                
+                data.push({
+                    number: num,
+                    issue: period,
+                    drawResult: num,
+                    issueNo: period
+                });
+            }
+            showTable();
+            calcStats();
+            document.getElementById('stats').style.display = 'grid';
         }
 
         function showTable() {
@@ -316,6 +393,11 @@
             });
 
             html += '</tbody></table>';
+            
+            if (!isRealData) {
+                html += '<div style="text-align:center;padding:15px;color:#fa0;font-size:12px;">⚠️ এটি ডেমো ডেটা (API কাজ করছে না)</div>';
+            }
+            
             document.getElementById('content').innerHTML = html;
         }
 
@@ -347,12 +429,15 @@
             const top = Object.entries(nums).sort((a,b) => b[1]-a[1]).slice(0,5);
             let topHtml = '';
             top.forEach(([n, c]) => {
-                topHtml += `<div class="top-num"><div class="${getColorClass(n)}">${n}</div><div>${c}x</div></div>`;
+                topHtml += `<div class="top-num"><div class="${getColorClass(parseInt(n))}">${n}</div><div>${c}x</div></div>`;
             });
             document.getElementById('topNums').innerHTML = topHtml;
         }
 
+        // প্রথম লোড
         loadData();
+        
+        // প্রতি 30 সেকেন্ডে আপডেট
         setInterval(loadData, 30000);
     </script>
 </body>
