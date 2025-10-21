@@ -1,456 +1,665 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>WinGo Pro Signal - 15 History</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Courier New',monospace;background:#0a0e27;min-height:100vh;padding:15px;overflow-x:hidden}
-.matrix-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:.03;pointer-events:none}
-.container{max-width:700px;margin:0 auto;position:relative;z-index:1}
-.header{text-align:center;margin-bottom:20px;position:relative}
-.logo{font-size:28px;color:#00ff41;text-shadow:0 0 20px #00ff41;animation:glow 2s ease-in-out infinite;margin-bottom:8px}
-@keyframes glow{0%,100%{text-shadow:0 0 20px #00ff41}50%{text-shadow:0 0 30px #00ff41,0 0 60px #00ff41}}
-.title{color:#00ff41;font-size:13px;letter-spacing:2px;text-transform:uppercase}
-.scan-line{position:absolute;width:100%;height:2px;background:linear-gradient(90deg,transparent,#00ff41,transparent);animation:scan 3s linear infinite}
-@keyframes scan{0%{top:0}100%{top:100%}}
-.prediction-container{background:linear-gradient(135deg,rgba(0,255,65,.1) 0%,rgba(0,100,255,.1) 100%);border:2px solid #00ff41;border-radius:12px;overflow:hidden;box-shadow:0 0 30px rgba(0,255,65,.3);margin-bottom:20px;animation:borderPulse 2s ease-in-out infinite}
-@keyframes borderPulse{0%,100%{box-shadow:0 0 30px rgba(0,255,65,.3)}50%{box-shadow:0 0 50px rgba(0,255,65,.5)}}
-.prediction-header{padding:12px;text-align:center;background:linear-gradient(135deg,rgba(0,255,65,.2) 0%,rgba(0,100,255,.2) 100%);border-bottom:1px solid #00ff41}
-.prediction-header h3{color:#00ff41;font-size:15px;letter-spacing:2px;text-transform:uppercase}
-.prediction-content{padding:30px 20px;text-align:center}
-.prediction-result{font-size:56px;font-weight:bold;margin-bottom:15px;text-transform:uppercase;letter-spacing:4px;animation:fadeInScale 1s ease-out}
-@keyframes fadeInScale{0%{opacity:0;transform:scale(.5)}100%{opacity:1;transform:scale(1)}}
-.prediction-big{color:#ff0055;text-shadow:0 0 20px #ff0055}
-.prediction-small{color:#00ff41;text-shadow:0 0 20px #00ff41}
-.confidence-bar{width:180px;height:8px;background:rgba(255,255,255,.1);border-radius:4px;margin:15px auto;overflow:hidden}
-.confidence-fill{height:100%;background:linear-gradient(90deg,#ff0055,#ffaa00,#00ff41);border-radius:4px;animation:fillBar 2s ease-out;position:relative}
-@keyframes fillBar{0%{width:0%}}
-.confidence-fill::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shimmer 2s infinite}
-@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-.confidence-label{color:#00ff41;font-size:12px;margin-top:8px;letter-spacing:1px;text-transform:uppercase}
-.confidence-high{color:#00ff41;text-shadow:0 0 10px #00ff41}
-.confidence-low{color:#ff0055;text-shadow:0 0 10px #ff0055}
-.stats-container{background:linear-gradient(135deg,rgba(0,255,65,.05) 0%,rgba(0,100,255,.05) 100%);border:1px solid rgba(0,255,65,.3);border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 0 20px rgba(0,255,65,.2)}
-.stats-info{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
-.stat-item{text-align:center;padding:12px 8px;background:rgba(0,255,65,.05);border:1px solid rgba(0,255,65,.2);border-radius:8px;transition:all .3s ease}
-.stat-item:hover{transform:translateY(-3px);box-shadow:0 5px 20px rgba(0,255,65,.3)}
-.stat-label{font-size:9px;color:#00ff41;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;opacity:.7}
-.stat-value{font-size:24px;font-weight:bold;color:#00ff41;text-shadow:0 0 10px #00ff41}
-.stat-win{color:#00ff41;text-shadow:0 0 15px #00ff41}
-.stat-loss{color:#ff0055;text-shadow:0 0 15px #ff0055}
-.stat-streak{color:#ffaa00;text-shadow:0 0 15px #ffaa00}
-.table-container{background:linear-gradient(135deg,rgba(0,255,65,.05) 0%,rgba(0,100,255,.05) 100%);border:1px solid rgba(0,255,65,.3);border-radius:12px;overflow:hidden;box-shadow:0 0 20px rgba(0,255,65,.2)}
-.history-count{text-align:center;color:#00ff41;font-size:11px;padding:8px;background:rgba(0,255,65,.1);border-bottom:1px solid rgba(0,255,65,.3);letter-spacing:1px}
-table{width:100%;border-collapse:collapse}
-thead{background:linear-gradient(135deg,rgba(0,255,65,.2) 0%,rgba(0,100,255,.2) 100%)}
-th{padding:12px 6px;text-align:center;font-weight:600;color:#00ff41;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #00ff41}
-tbody tr{background:rgba(0,0,0,.3);transition:all .3s ease;border-bottom:1px solid rgba(0,255,65,.1)}
-tbody tr:hover{background:rgba(0,255,65,.1);transform:scale(1.01);box-shadow:0 0 15px rgba(0,255,65,.3)}
-td{padding:10px 6px;text-align:center;color:#00ff41;font-size:11px}
-.period-cell{font-family:'Courier New',monospace;font-size:10px;opacity:.7}
-.number-cell{font-size:22px;font-weight:bold}
-.color-cell{display:flex;justify-content:center;align-items:center;gap:4px}
-.color-dot{width:14px;height:14px;border-radius:50%;display:inline-block;border:2px solid rgba(0,255,65,.3);animation:dotPulse 2s infinite}
-@keyframes dotPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
-.red{background:#ff0055;box-shadow:0 0 8px #ff0055}
-.green{background:#00ff41;box-shadow:0 0 8px #00ff41}
-.violet{background:#aa00ff;box-shadow:0 0 8px #aa00ff}
-.result-cell{font-weight:bold;font-size:11px;padding:5px 8px;border-radius:4px}
-.result-win{color:#00ff41;background:rgba(0,255,65,.2);border:1px solid #00ff41;text-shadow:0 0 5px #00ff41}
-.result-loss{color:#ff0055;background:rgba(255,0,85,.2);border:1px solid #ff0055;text-shadow:0 0 5px #ff0055}
-.time-display{background:rgba(0,255,65,.1);padding:15px 30px;border-radius:12px;display:inline-block;margin-top:15px;border:1px solid rgba(0,255,65,.3);box-shadow:0 0 20px rgba(0,255,65,.2)}
-.current-time{font-size:28px;font-weight:bold;color:#00ff41;font-family:'Courier New',monospace;letter-spacing:2px;text-shadow:0 0 20px #00ff41}
-.seconds-highlight{color:#ff0055;font-size:32px;animation:pulse 1s infinite;text-shadow:0 0 20px #ff0055}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-.refresh-btn{position:fixed;bottom:25px;right:25px;background:linear-gradient(135deg,#00ff41 0%,#00aaff 100%);color:#0a0e27;border:none;padding:14px 24px;border-radius:40px;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 0 30px rgba(0,255,65,.5);display:flex;align-items:center;gap:8px;transition:all .3s;z-index:1000;text-transform:uppercase;letter-spacing:1.5px}
-.refresh-btn:hover{transform:scale(1.08);box-shadow:0 0 50px rgba(0,255,65,.8)}
-.refresh-btn:active{transform:scale(.95)}
-.refresh-icon{font-size:18px}
-.refresh-icon.spinning{animation:spin .5s linear}
-@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.loading{text-align:center;padding:15px;color:#00ff41;animation:blink 1s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.update-time{text-align:center;margin-top:15px}
-@media (max-width:600px){.logo{font-size:22px}.title{font-size:10px;letter-spacing:1px}.stats-info{grid-template-columns:repeat(2,1fr);gap:10px}.prediction-result{font-size:40px;letter-spacing:2px}th,td{padding:8px 4px;font-size:10px}.number-cell{font-size:18px}.refresh-btn{bottom:15px;right:15px;padding:12px 20px;font-size:12px}.current-time{font-size:22px}.stat-value{font-size:20px}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WinGo 3M - Hacker Prediction System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @keyframes matrixRain {
+            0% { transform: translateY(-100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes neonPulse {
+            0%, 100% { 
+                text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+            }
+            50% { 
+                text-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00, 0 0 60px #00ff00;
+            }
+        }
+
+        @keyframes scanline {
+            0% { top: -100%; }
+            100% { top: 100%; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes rotateIn {
+            from { opacity: 0; transform: rotate(-180deg) scale(0); }
+            to { opacity: 1; transform: rotate(0) scale(1); }
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000000;
+            color: #00ff00;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.1;
+        }
+
+        .matrix-char {
+            position: absolute;
+            color: #00ff00;
+            font-size: 20px;
+            animation: matrixRain 3s linear infinite;
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(transparent, #00ff00, transparent);
+            opacity: 0.1;
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: rgba(0, 20, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+            animation: fadeIn 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .title {
+            font-size: 42px;
+            text-align: center;
+            animation: neonPulse 2s ease-in-out infinite;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 16px;
+            color: #00cc00;
+            letter-spacing: 2px;
+        }
+
+        .terminal-line {
+            color: #00ff00;
+            margin: 5px 0;
+        }
+
+        .terminal-line::before {
+            content: '> ';
+            color: #00ff00;
+        }
+
+        .refresh-btn {
+            background: transparent;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            border-radius: 5px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px auto;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .refresh-btn:hover {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
+            transform: scale(1.05);
+        }
+
+        .refresh-btn.loading {
+            animation: glitch 0.3s infinite;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(0, 20, 0, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            animation: fadeIn 1s ease-out;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 30px rgba(0, 255, 0, 0.4);
+            border-color: #00ff00;
+        }
+
+        .stat-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #00ff00;
+        }
+
+        .stat-icon {
+            font-size: 24px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #00ff00;
+        }
+
+        .history-container {
+            background: rgba(0, 20, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        .history-header {
+            background: rgba(0, 255, 0, 0.1);
+            padding: 20px;
+            border-bottom: 2px solid #00ff00;
+        }
+
+        .history-title {
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: neonPulse 3s ease-in-out infinite;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(0, 255, 0, 0.05);
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-size: 14px;
+            border-bottom: 2px solid #00ff00;
+            color: #00ff00;
+        }
+
+        th.center {
+            text-align: center;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+            transition: all 0.3s;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 255, 0, 0.05);
+            transform: scale(1.02);
+        }
+
+        td {
+            padding: 15px;
+            font-size: 14px;
+        }
+
+        td.center {
+            text-align: center;
+        }
+
+        .number-display {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            border-radius: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 0 15px currentColor;
+            animation: rotateIn 0.5s ease-out;
+        }
+
+        .color-green {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 20px #00ff00;
+        }
+
+        .color-red {
+            background: #ff0000;
+            color: #fff;
+            box-shadow: 0 0 20px #ff0000;
+        }
+
+        .color-violet {
+            background: linear-gradient(135deg, #ff0000, #ff00ff);
+            color: #fff;
+            box-shadow: 0 0 20px #ff00ff;
+        }
+
+        .size-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1px solid;
+        }
+
+        .size-big {
+            background: rgba(255, 165, 0, 0.2);
+            border-color: #ffa500;
+            color: #ffa500;
+        }
+
+        .size-small {
+            background: rgba(0, 150, 255, 0.2);
+            border-color: #0096ff;
+            color: #0096ff;
+        }
+
+        .loading-screen {
+            text-align: center;
+            padding: 50px;
+        }
+
+        .loading-text {
+            font-size: 20px;
+            animation: neonPulse 1s ease-in-out infinite;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 255, 0, 0.3);
+            border-top-color: #00ff00;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-msg {
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid #ff0000;
+            color: #ff0000;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            animation: glitch 0.5s ease-out;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #00cc00;
+            font-size: 14px;
+            margin-top: 30px;
+        }
+
+        .top-numbers {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .top-number {
+            text-align: center;
+        }
+
+        .top-number-value {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .top-number-count {
+            font-size: 12px;
+            color: #00cc00;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 28px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 10px 5px;
+            }
+            
+            .number-display {
+                width: 40px;
+                height: 40px;
+                line-height: 40px;
+                font-size: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-<canvas class="matrix-bg" id="matrix"></canvas>
-<div class="container">
-<div class="header">
-<div class="scan-line"></div>
-<div class="logo">⚡ WINGO PRO</div>
-<div class="title">SIGNAL ANALYZER v4.5 | 3 MINUTES</div>
-</div>
-<div class="prediction-container">
-<div class="prediction-header"><h3>🔮 NEXT PREDICTION</h3></div>
-<div class="prediction-content">
-<div class="prediction-result" id="currPred"><div class="loading" style="font-size:16px">[ SCANNING... ]</div></div>
-<div class="confidence-bar"><div class="confidence-fill" id="confBar" style="width:0%"></div></div>
-<div class="confidence-label" id="confLabel">ANALYZING</div>
-</div>
-</div>
-<div class="stats-container">
-<div class="stats-info">
-<div class="stat-item"><div class="stat-label">Win</div><div class="stat-value stat-win" id="wc">0</div></div>
-<div class="stat-item"><div class="stat-label">Loss</div><div class="stat-value stat-loss" id="lc">0</div></div>
-<div class="stat-item"><div class="stat-label">Total</div><div class="stat-value" id="tc">0</div></div>
-<div class="stat-item"><div class="stat-label">Accuracy</div><div class="stat-value" id="wr">0%</div></div>
-<div class="stat-item"><div class="stat-label">Max Win</div><div class="stat-value stat-streak" id="mw">0</div></div>
-<div class="stat-item"><div class="stat-label">Max Loss</div><div class="stat-value stat-streak" id="ml">0</div></div>
-</div>
-</div>
-<div class="table-container">
-<div class="history-count">📊 SHOWING 15 HISTORY RECORDS</div>
-<table>
-<thead><tr><th>Period</th><th>Number</th><th>Size</th><th>Color</th><th>Result</th></tr></thead>
-<tbody id="tb"><tr><td colspan="5" class="loading">[ LOADING DATA... ]</td></tr></tbody>
-</table>
-</div>
-<p class="update-time"><span class="time-display"><div class="current-time" id="rt">00:00:00</div></span></p>
-</div>
-<button class="refresh-btn" onclick="_r()"><span class="refresh-icon" id="ri">⟳</span><span>Refresh</span></button>
-<script>
-const c=document.getElementById('matrix'),ctx=c.getContext('2d');
-c.width=window.innerWidth;
-c.height=window.innerHeight;
-const chars='01',fontSize=14,cols=c.width/fontSize,drops=[];
-for(let i=0;i<cols;i++)drops[i]=1;
+    <div class="matrix-bg" id="matrixBg"></div>
+    <div class="scanline"></div>
 
-function drawMatrix(){
-    ctx.fillStyle='rgba(10,14,39,0.05)';
-    ctx.fillRect(0,0,c.width,c.height);
-    ctx.fillStyle='#00ff41';
-    ctx.font=fontSize+'px monospace';
-    for(let i=0;i<drops.length;i++){
-        const t=chars[Math.floor(Math.random()*chars.length)];
-        ctx.fillText(t,i*fontSize,drops[i]*fontSize);
-        if(drops[i]*fontSize>c.height&&Math.random()>0.975)drops[i]=0;
-        drops[i]++
-    }
-}
-setInterval(drawMatrix,50);
+    <div class="container">
+        <div class="header">
+            <div class="title">⚡ WINGO 3M PREDICTION SYSTEM ⚡</div>
+            <div class="subtitle">/// ADVANCED HACKER ANALYTICS ///</div>
+            <div style="margin-top: 20px; text-align: center;">
+                <div class="terminal-line">SYSTEM STATUS: ONLINE</div>
+                <div class="terminal-line">SECURITY LEVEL: MAXIMUM</div>
+                <div class="terminal-line">DATA STREAM: ACTIVE</div>
+            </div>
+        </div>
 
-(function(){
-    const _0x4a=['Big','Small','win','loss'];
-    let _p=null,_c=null,_h=[],_lp=null,_ct;
-    
-    const _x=n=>parseInt(n)>=5?_0x4a[0]:_0x4a[1];
-    
-    const _g=(n,c)=>{
-        let a=[];
-        if(c==='red')a.push('red');
-        else if(c==='green')a.push('green');
-        else if(c==='violet')a.push('violet');
-        if(n===0){a.push('violet');a.push('red')}
-        else if(n===5){a.push('violet');a.push('green')}
-        return a
-    };
-    
-    const _a=d=>{
-        if(d.length<3)return{p:_0x4a[0],c:55};
-        let cs=0,cb=0,lcs=0,lcb=0;
-        for(let i=0;i<d.length;i++){
-            if(d[i]===_0x4a[1]){cs++;if(cb>0)lcb=cb;cb=0}
-            else{cb++;if(cs>0)lcs=cs;cs=0}
-        }
-        const lastWasBig=d[0]===_0x4a[0];
-        let isAlternating=true;
-        let alternateCount=0;
-        if(d.length>=3){
-            for(let i=1;i<Math.min(6,d.length);i++){
-                if(d[i]===d[i-1]){isAlternating=false;break}
-                alternateCount++
+        <button class="refresh-btn" id="refreshBtn" onclick="fetchData()">
+            <span id="refreshIcon">🔄</span>
+            <span>DATA REFRESH</span>
+        </button>
+
+        <div id="errorContainer"></div>
+
+        <div class="stats-grid" id="statsGrid" style="display: none;">
+            <div class="stat-card">
+                <div class="stat-title">
+                    <span class="stat-icon">📊</span>
+                    COLOR STATISTICS
+                </div>
+                <div class="stat-item">
+                    <span style="color: #00ff00;">● Green</span>
+                    <span class="stat-value" id="greenCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span style="color: #ff0000;">● Red</span>
+                    <span class="stat-value" id="redCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span style="color: #ff00ff;">● Violet</span>
+                    <span class="stat-value" id="violetCount">0</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-title">
+                    <span class="stat-icon">📈</span>
+                    SIZE DISTRIBUTION
+                </div>
+                <div class="stat-item">
+                    <span style="color: #ffa500;">Big (5-9)</span>
+                    <span class="stat-value" id="bigCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span style="color: #0096ff;">Small (0-4)</span>
+                    <span class="stat-value" id="smallCount">0</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-title">
+                    <span class="stat-icon">🎯</span>
+                    TOP 5 NUMBERS
+                </div>
+                <div class="top-numbers" id="topNumbers"></div>
+            </div>
+        </div>
+
+        <div class="history-container">
+            <div class="history-header">
+                <div class="history-title">
+                    <span>⏱️</span>
+                    LAST 15 RESULTS HISTORY
+                </div>
+            </div>
+
+            <div id="tableContainer">
+                <div class="loading-screen">
+                    <div class="spinner"></div>
+                    <div class="loading-text">LOADING DATA...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="terminal-line">AUTO-UPDATE EVERY 30 SECONDS</div>
+            <div class="terminal-line">LAST UPDATE: <span id="lastUpdate"></span></div>
+            <div style="margin-top: 10px; color: #00ff00;">═══════════════════════════════════</div>
+        </div>
+    </div>
+
+    <script>
+        // Matrix Rain Effect
+        function createMatrixRain() {
+            const matrixBg = document.getElementById('matrixBg');
+            const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            
+            for (let i = 0; i < 30; i++) {
+                const char = document.createElement('div');
+                char.className = 'matrix-char';
+                char.textContent = chars[Math.floor(Math.random() * chars.length)];
+                char.style.left = Math.random() * 100 + '%';
+                char.style.animationDelay = Math.random() * 3 + 's';
+                char.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                matrixBg.appendChild(char);
             }
         }
-        let wavePattern=false;
-        if(d.length>=6){
-            const p1=d[0],p2=d[1],p3=d[2],p4=d[3],p5=d[4];
-            if((p1!==p2)&&(p2===p3)&&(p3!==p4)&&(p4===p5)){wavePattern=true}
+
+        createMatrixRain();
+
+        let historyData = [];
+
+        function getColor(number) {
+            const num = parseInt(number);
+            if (num === 0 || num === 5) return 'color-violet';
+            if ([1, 3, 7, 9].includes(num)) return 'color-green';
+            if ([2, 4, 6, 8].includes(num)) return 'color-red';
+            return '';
         }
-        let bigCount=0,smallCount=0;
-        const checkLen=Math.min(15,d.length);
-        for(let i=0;i<checkLen;i++){
-            if(d[i]===_0x4a[0])bigCount++;
-            else smallCount++
+
+        function getColorName(number) {
+            const num = parseInt(number);
+            if (num === 0 || num === 5) return 'Red+Violet';
+            if ([1, 3, 7, 9].includes(num)) return 'Green';
+            if ([2, 4, 6, 8].includes(num)) return 'Red';
+            return '';
         }
-        const imbalance=Math.abs(bigCount-smallCount);
-        const isHeavyBig=bigCount>smallCount+2;
-        const isHeavySmall=smallCount>bigCount+2;
-        let momentum=0;
-        if(d.length>=5){
-            for(let i=0;i<5;i++){
-                if(d[i]===_0x4a[1])momentum++;
-                else momentum--
-            }
-        }
-        let pred='';
-        let conf=50;
-        if(isAlternating&&alternateCount>=4){
-            pred=lastWasBig?_0x4a[1]:_0x4a[0];
-            conf=88+Math.min(alternateCount*2,10);
-            return{p:pred,c:Math.min(conf,97)}
-        }
-        if(cs>=7){
-            pred=_0x4a[0];
-            conf=92+Math.min((cs-7)*2,6);
-            return{p:pred,c:Math.min(conf,98)}
-        }else if(cb>=7){
-            pred=_0x4a[1];
-            conf=92+Math.min((cb-7)*2,6);
-            return{p:pred,c:Math.min(conf,98)}
-        }
-        if(cs>=5&&cs<=6){
-            pred=_0x4a[0];
-            conf=82+(cs*3);
-            return{p:pred,c:Math.min(conf,94)}
-        }else if(cb>=5&&cb<=6){
-            pred=_0x4a[1];
-            conf=82+(cb*3);
-            return{p:pred,c:Math.min(conf,94)}
-        }
-        if(cs===4&&isHeavySmall){
-            pred=_0x4a[0];
-            conf=78+imbalance*2;
-            return{p:pred,c:Math.min(conf,89)}
-        }else if(cb===4&&isHeavyBig){
-            pred=_0x4a[1];
-            conf=78+imbalance*2;
-            return{p:pred,c:Math.min(conf,89)}
-        }
-        if(isAlternating&&alternateCount===3){
-            pred=lastWasBig?_0x4a[1]:_0x4a[0];
-            conf=76+Math.random()*6;
-            return{p:pred,c:Math.round(conf)}
-        }
-        if(wavePattern){
-            pred=d[0]===d[1]?(d[0]===_0x4a[0]?_0x4a[1]:_0x4a[0]):d[0];
-            conf=72+Math.random()*8;
-            return{p:pred,c:Math.round(conf)}
-        }
-        if(cs===3){
-            pred=_0x4a[0];
-            conf=lcb>=3?74+Math.random()*8:68+Math.random()*10
-        }else if(cb===3){
-            pred=_0x4a[1];
-            conf=lcs>=3?74+Math.random()*8:68+Math.random()*10
-        }else if(cs===2){
-            pred=_0x4a[0];
-            conf=momentum>=2?70+Math.random()*8:62+Math.random()*10
-        }else if(cb===2){
-            pred=_0x4a[1];
-            conf=momentum<=-2?70+Math.random()*8:62+Math.random()*10
-        }else if(cs===1){
-            if(lcb>=4){pred=_0x4a[1];conf=64+Math.random()*8}
-            else if(lcb===3){pred=_0x4a[0];conf=58+Math.random()*8}
-            else{pred=isHeavySmall?_0x4a[0]:_0x4a[1];conf=54+Math.random()*8}
-        }else if(cb===1){
-            if(lcs>=4){pred=_0x4a[0];conf=64+Math.random()*8}
-            else if(lcs===3){pred=_0x4a[1];conf=58+Math.random()*8}
-            else{pred=isHeavyBig?_0x4a[1]:_0x4a[0];conf=54+Math.random()*8}
-        }else{
-            if(isHeavySmall){pred=_0x4a[0];conf=58+imbalance*3}
-            else if(isHeavyBig){pred=_0x4a[1];conf=58+imbalance*3}
-            else{pred=lastWasBig?_0x4a[1]:_0x4a[0];conf=52+Math.random()*10}
-        }
-        if(d.length>=10){
-            const last10=d.slice(0,10);
-            const b10=last10.filter(x=>x===_0x4a[0]).length;
-            const s10=last10.filter(x=>x===_0x4a[1]).length;
-            if(pred===_0x4a[0]&&s10>b10+2)conf+=8;
-            if(pred===_0x4a[1]&&b10>s10+2)conf+=8
-        }
-        conf=Math.min(98,Math.max(48,Math.round(conf)));
-        return{p:pred,c:conf}
-    };
-    
-    const _calcStreak=arr=>{
-        let mw=0,ml=0,cw=0,cl=0;
-        arr.forEach(e=>{
-            if(e.res===_0x4a[2]){cw++;if(cl>ml)ml=cl;cl=0}
-            else if(e.res===_0x4a[3]){cl++;if(cw>mw)mw=cw;cw=0}
-        });
-        if(cw>mw)mw=cw;
-        if(cl>ml)ml=cl;
-        return{mw,ml}
-    };
-    
-    const _u=()=>{
-        const n=new Date(),
-        h=String(n.getHours()).padStart(2,'0'),
-        m=String(n.getMinutes()).padStart(2,'0'),
-        s=String(n.getSeconds()).padStart(2,'0'),
-        e=document.getElementById('rt');
-        if(e)e.innerHTML=`${h}:${m}:<span class="seconds-highlight">${s}</span>`;
-        if(n.getSeconds()===59)_l()
-    };
-    
-    const _s=()=>{_u();clearInterval(_ct);_ct=setInterval(_u,1000)};
-    
-    window._r=()=>{
-        const ic=document.getElementById('ri');
-        if(ic){ic.classList.add('spinning');setTimeout(()=>ic.classList.remove('spinning'),500)}
-        _l()
-    };
-    
-    const _l=async()=>{
-        try{
-            const t=new Date().getTime();
-            const baseUrl='https://draw.ar-lottery01.com/api/Lottery/GetHistoryIssuePage';
-            const params1=`?gameCode=WinGo_3M&pageNo=1&pageSize=10&language=en&random=${Math.floor(Math.random()*1000000000)}&signature=${Math.random().toString(36).substring(2,15).toUpperCase()}&timestamp=${Math.floor(t/1000)}`;
-            const params2=`?gameCode=WinGo_3M&pageNo=2&pageSize=10&language=en&random=${Math.floor(Math.random()*1000000000)}&signature=${Math.random().toString(36).substring(2,15).toUpperCase()}&timestamp=${Math.floor(t/1000)}`;
-            
-            const [r1,r2]=await Promise.all([
-                fetch(baseUrl+params1),
-                fetch(baseUrl+params2)
-            ]);
-            
-            const d1=await r1.json();
-            const d2=await r2.json();
-            
-            let ls1=[],ls2=[];
-            const _pk=['data','list'],_sk=['list'];
-            
-            if(d1&&d1[_pk[0]]&&d1[_pk[0]][_pk[1]])ls1=d1[_pk[0]][_pk[1]].slice(0,10);
-            else if(d1&&d1[_sk[0]])ls1=d1[_sk[0]].slice(0,10);
-            else if(Array.isArray(d1))ls1=d1.slice(0,10);
-            
-            if(d2&&d2[_pk[0]]&&d2[_pk[0]][_pk[1]])ls2=d2[_pk[0]][_pk[1]].slice(0,5);
-            else if(d2&&d2[_sk[0]])ls2=d2[_sk[0]].slice(0,5);
-            else if(Array.isArray(d2))ls2=d2.slice(0,5);
-            
-            const ls=[...ls1,...ls2];
-            
-            const tb=document.getElementById("tb");
-            tb.innerHTML="";
-            
-            if(ls.length===0){
-                tb.innerHTML='<tr><td colspan="5" class="loading">[ NO DATA ]</td></tr>';
-                return
-            }
-            
-            const _f1=['issue','period','issueNo','periodId','issueNumber'],
-            _f2=['result','number','num','openResult'],
-            _f3=['color','colour'],
-            _f4=['gameNo','drawNo','id'];
-            
-            const tp=String(ls[0][_f1[0]]||ls[0][_f1[1]]||ls[0][_f1[2]]||ls[0][_f1[3]]||ls[0][_f1[4]]||''),
-            tn=String(ls[0][_f2[0]]||ls[0][_f2[1]]||ls[0][_f2[2]]||ls[0][_f2[3]]||''),
-            ts=_x(tn);
-            
-            const sh=ls.map(i=>{
-                const rn=i[_f2[0]]||i[_f2[1]]||i[_f2[2]]||i[_f2[3]]||"?";
-                return _x(rn)
-            });
-            
-            const pd=_a(sh);
-            _c=pd;
-            
-            if(_lp!==tp){
-                if(_p){
-                    const im=_p.p===ts,
-                    re={per:tp,pred:_p.p,act:ts,res:im?_0x4a[2]:_0x4a[3],num:tn};
-                    _h.unshift(re);
-                    if(_h.length>50)_h=_h.slice(0,50)
+
+        async function fetchData() {
+            const refreshBtn = document.getElementById('refreshBtn');
+            const refreshIcon = document.getElementById('refreshIcon');
+            const errorContainer = document.getElementById('errorContainer');
+            const tableContainer = document.getElementById('tableContainer');
+            const statsGrid = document.getElementById('statsGrid');
+
+            refreshBtn.classList.add('loading');
+            refreshBtn.disabled = true;
+            errorContainer.innerHTML = '';
+
+            try {
+                tableContainer.innerHTML = `
+                    <div class="loading-screen">
+                        <div class="spinner"></div>
+                        <div class="loading-text">ACCESSING DATABASE...</div>
+                    </div>
+                `;
+
+                // Fetch from first API
+                const response1 = await fetch(`https://draw.ar-lottery01.com/WinGo/WinGo_3M.json?ts=${Date.now()}`);
+                const data1 = await response1.json();
+
+                // Fetch from second API
+                const timestamp = Date.now();
+                const response2 = await fetch(
+                    `https://api.ar-lottery01.com/api/Lottery/GetHistoryIssuePage?gameCode=WinGo_3M&pageNo=2&pageSize=5&language=en&random=${Math.floor(Math.random() * 1000000000)}&signature=198C060C3EFA83B1030719D2ECA2295F&timestamp=${timestamp}`
+                );
+                const data2 = await response2.json();
+
+                // Combine data
+                let combinedData = [];
+                
+                if (data1 && Array.isArray(data1)) {
+                    combinedData = [...data1.slice(0, 10)];
                 }
-                _p={..._c};
-                _lp=tp
+                
+                if (data2 && data2.data && Array.isArray(data2.data.list)) {
+                    combinedData = [...combinedData, ...data2.data.list.slice(0, 5)];
+                }
+
+                historyData = combinedData.slice(0, 15);
+                
+                displayData();
+                calculateStatistics();
+                updateLastUpdate();
+
+                statsGrid.style.display = 'grid';
+
+            } catch (error) {
+                errorContainer.innerHTML = `
+                    <div class="error-msg">
+                        ⚠️ ERROR: UNABLE TO CONNECT TO SERVER<br>
+                        ${error.message}
+                    </div>
+                `;
+                console.error(error);
+            } finally {
+                refreshBtn.classList.remove('loading');
+                refreshBtn.disabled = false;
             }
-            
-            const cr=document.getElementById("currPred"),
-            cb=document.getElementById("confBar"),
-            cl=document.getElementById("confLabel");
-            
-            cr.innerHTML=`<span class="prediction-${_c.p.toLowerCase()}">${_c.p}</span>`;
-            cb.style.width=_c.c+'%';
-            
-            if(_c.c>=70)cl.innerHTML='<span class="confidence-high">HIGH CONFIDENCE</span>';
-            else cl.innerHTML='<span class="confidence-low">LOW CONFIDENCE</span>';
-            
-            let wc=0,lc=0;
-            _h.forEach(e=>{
-                if(e.res===_0x4a[2])wc++;
-                if(e.res===_0x4a[3])lc++
-            });
-            
-            const st=_calcStreak(_h);
-            
-            ls.forEach((it,ix)=>{
-                const tr=document.createElement("tr"),
-                tdp=document.createElement("td");
-                tdp.className="period-cell";
-                const pv=String(it[_f1[0]]||it[_f1[1]]||it[_f1[2]]||it[_f1[3]]||it[_f1[4]]||it[_f4[0]]||it[_f4[1]]||it[_f4[2]]||'');
-                tdp.textContent=pv||"N/A";
-                
-                const rn=it[_f2[0]]||it[_f2[1]]||it[_f2[2]]||it[_f2[3]]||"?",
-                tdn=document.createElement("td");
-                tdn.className="number-cell";
-                const ns=document.createElement("span"),
-                co=(it[_f3[0]]||it[_f3[1]]||"").toLowerCase();
-                
-                if(co==='red'){ns.style.color='#ff0055';ns.style.textShadow='0 0 10px #ff0055'}
-                else if(co==='green'){ns.style.color='#00ff41';ns.style.textShadow='0 0 10px #00ff41'}
-                else if(co==='violet'||co==='purple'){ns.style.color='#aa00ff';ns.style.textShadow='0 0 10px #aa00ff'}
-                
-                ns.textContent=rn;
-                tdn.appendChild(ns);
-                
-                const tds=document.createElement("td");
-                tds.textContent=sh[ix];
-                
-                const tdc=document.createElement("td");
-                tdc.className="color-cell";
-                const nv=parseInt(rn),
-                cls=_g(nv,co);
-                
-                cls.forEach(c=>{
-                    const dt=document.createElement("span");
-                    dt.className=`color-dot ${c}`;
-                    tdc.appendChild(dt)
-                });
-                
-                const tdr=document.createElement("td"),
-                mr=_h.find(q=>String(q.per)===String(pv));
-                
-                if(mr){
-                    if(mr.res===_0x4a[2]){
-                        tdr.className="result-cell result-win";
-                        tdr.textContent="✓ WIN"
-                    }else{
-                        tdr.className="result-cell result-loss";
-                        tdr.textContent="✗ LOSS"
-                    }
-                }else tdr.textContent="-";
-                
-                tr.appendChild(tdp);
-                tr.appendChild(tdn);
-                tr.appendChild(tds);
-                tr.appendChild(tdc);
-                tr.appendChild(tdr);
-                tb.appendChild(tr)
-            });
-            
-            const to=wc+lc,
-            wrt=to>0?Math.round((wc/to)*100):0;
-            
-            document.getElementById('wc').textContent=wc;
-            document.getElementById('lc').textContent=lc;
-            document.getElementById('tc').textContent=to;
-            document.getElementById('wr').textContent=wrt+'%';
-            document.getElementById('mw').textContent=st.mw;
-            document.getElementById('ml').textContent=st.ml
-            
-        }catch(e){
-            console.error('Error:',e);
-            document.getElementById("tb").innerHTML='<tr><td colspan="5" class="loading">[ ERROR LOADING DATA ]</td></tr>'
         }
-    };
-    
-    _l();
-    _s()
-})();
-</script>
-</body>
-</html>
+
+        function displayData() {
+            const tableContainer = document.getElementById('tableContainer');
+            
+            if (historyData.length === 0) {
+                tableContainer.innerHTML = `
+                    <div class="loading-screen">
+                        <div class="loading-text">NO DATA AVAILABLE</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>PERIOD</th>
+                            <th class="center">NUMBER</th>
+                            <th class="center">COLOR</th>
+                            <th class="center">SIZE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            historyData.forEach((item, index) => {
+                const number = parseInt(item.number || item.drawResult);
+                const period = item.issue || item.issueNo || 'N/A';
+                const isBig = number >= 5;
+                const colorClass = getColor(number);
+                const colorName = getColorName(number);
+
+                tableHTML += `
+                    <tr style="animation-delay: ${index * 0.05}s">
+                        <td><strong>#${index + 1}</strong></td>
+                        <td style="font-family: mon
