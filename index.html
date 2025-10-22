@@ -1,137 +1,442 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>WinGo 3M Live History + Prediction</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>WinGo Pro Signal</title>
 <style>
-  body {
-    background:#0b0b0b;
-    color:#00ffcc;
-    font-family:monospace;
-    padding:12px;
-  }
-  h1 { color:#ffcc00; text-align:center; margin-bottom:10px; }
-  table {
-    width:100%;
-    border-collapse:collapse;
-    margin-top:10px;
-  }
-  th,td {
-    border:1px solid #00ffcc33;
-    padding:6px;
-    text-align:center;
-    font-size:13px;
-  }
-  th { background:#111; }
-  tr:nth-child(even){background:#161616;}
-  .pred{color:#ff66cc;font-weight:bold;}
-  .ok{color:#00ff00;}
-  .wrong{color:#ff4444;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Courier New',monospace;background:#0a0e27;min-height:100vh;padding:15px;overflow-x:hidden}
+.matrix-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:.03;pointer-events:none}
+.container{max-width:700px;margin:0 auto;position:relative;z-index:1}
+.header{text-align:center;margin-bottom:20px;position:relative}
+.logo{font-size:28px;color:#00ff41;text-shadow:0 0 20px #00ff41;animation:glow 2s ease-in-out infinite;margin-bottom:8px}
+@keyframes glow{0%,100%{text-shadow:0 0 20px #00ff41}50%{text-shadow:0 0 30px #00ff41,0 0 60px #00ff41}}
+.title{color:#00ff41;font-size:13px;letter-spacing:2px;text-transform:uppercase}
+.scan-line{position:absolute;width:100%;height:2px;background:linear-gradient(90deg,transparent,#00ff41,transparent);animation:scan 3s linear infinite}
+@keyframes scan{0%{top:0}100%{top:100%}}
+
+.input-container{background:linear-gradient(135deg,rgba(0,255,65,.1) 0%,rgba(0,100,255,.1) 100%);border:2px solid #00ff41;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 0 30px rgba(0,255,65,.3)}
+.input-group{margin-bottom:15px}
+.input-label{color:#00ff41;font-size:12px;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;display:block}
+.input-field{width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(0,255,65,.5);border-radius:8px;padding:12px;color:#00ff41;font-size:16px;font-family:'Courier New',monospace}
+.input-field:focus{outline:none;border-color:#00ff41;box-shadow:0 0 15px rgba(0,255,65,.5)}
+.btn-group{display:flex;gap:10px;margin-top:15px}
+.btn{flex:1;background:linear-gradient(135deg,#00ff41 0%,#00aaff 100%);color:#0a0e27;border:none;padding:12px 20px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 0 20px rgba(0,255,65,.5);transition:all .3s;text-transform:uppercase;letter-spacing:1px}
+.btn:hover{transform:scale(1.05);box-shadow:0 0 30px rgba(0,255,65,.8)}
+.btn:active{transform:scale(.95)}
+.btn-secondary{background:linear-gradient(135deg,#ff0055 0%,#aa00ff 100%);box-shadow:0 0 20px rgba(255,0,85,.5)}
+.btn-secondary:hover{box-shadow:0 0 30px rgba(255,0,85,.8)}
+
+.prediction-container{background:linear-gradient(135deg,rgba(0,255,65,.1) 0%,rgba(0,100,255,.1) 100%);border:2px solid #00ff41;border-radius:12px;overflow:hidden;box-shadow:0 0 30px rgba(0,255,65,.3);margin-bottom:20px;animation:borderPulse 2s ease-in-out infinite}
+@keyframes borderPulse{0%,100%{box-shadow:0 0 30px rgba(0,255,65,.3)}50%{box-shadow:0 0 50px rgba(0,255,65,.5)}}
+.prediction-header{padding:12px;text-align:center;background:linear-gradient(135deg,rgba(0,255,65,.2) 0%,rgba(0,100,255,.2) 100%);border-bottom:1px solid #00ff41}
+.prediction-header h3{color:#00ff41;font-size:15px;letter-spacing:2px;text-transform:uppercase}
+.prediction-content{padding:30px 20px;text-align:center}
+.prediction-result{font-size:56px;font-weight:bold;margin-bottom:15px;text-transform:uppercase;letter-spacing:4px;animation:fadeInScale 1s ease-out}
+@keyframes fadeInScale{0%{opacity:0;transform:scale(.5)}100%{opacity:1;transform:scale(1)}}
+.prediction-big{color:#ff0055;text-shadow:0 0 20px #ff0055}
+.prediction-small{color:#00ff41;text-shadow:0 0 20px #00ff41}
+.confidence-bar{width:180px;height:8px;background:rgba(255,255,255,.1);border-radius:4px;margin:15px auto;overflow:hidden}
+.confidence-fill{height:100%;background:linear-gradient(90deg,#ff0055,#ffaa00,#00ff41);border-radius:4px;animation:fillBar 2s ease-out;position:relative}
+@keyframes fillBar{0%{width:0%}}
+.confidence-fill::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shimmer 2s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.confidence-label{color:#00ff41;font-size:12px;margin-top:8px;letter-spacing:1px;text-transform:uppercase}
+.confidence-high{color:#00ff41;text-shadow:0 0 10px #00ff41}
+.confidence-low{color:#ff0055;text-shadow:0 0 10px #ff0055}
+
+.pattern-analysis{background:linear-gradient(135deg,rgba(255,170,0,.1) 0%,rgba(170,0,255,.1) 100%);border:2px solid #ffaa00;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 0 30px rgba(255,170,0,.3)}
+.pattern-title{color:#ffaa00;font-size:14px;text-align:center;margin-bottom:15px;text-transform:uppercase;letter-spacing:2px;text-shadow:0 0 10px #ffaa00}
+.pattern-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:10px;margin-bottom:15px}
+.pattern-item{background:rgba(0,0,0,.5);border:1px solid rgba(255,170,0,.3);border-radius:8px;padding:10px;text-align:center;transition:all .3s}
+.pattern-item:hover{transform:scale(1.05);box-shadow:0 0 20px rgba(255,170,0,.5)}
+.pattern-label{font-size:9px;color:#ffaa00;margin-bottom:5px;text-transform:uppercase;opacity:.7}
+.pattern-value{font-size:20px;font-weight:bold;color:#ffaa00;text-shadow:0 0 10px #ffaa00}
+.pattern-highlight{border-color:#00ff41;background:rgba(0,255,65,.1);animation:patternGlow 2s infinite}
+@keyframes patternGlow{0%,100%{box-shadow:0 0 15px rgba(0,255,65,.3)}50%{box-shadow:0 0 25px rgba(0,255,65,.6)}}
+.pattern-highlight .pattern-value{color:#00ff41;text-shadow:0 0 15px #00ff41}
+
+.stats-container{background:linear-gradient(135deg,rgba(0,255,65,.05) 0%,rgba(0,100,255,.05) 100%);border:1px solid rgba(0,255,65,.3);border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 0 20px rgba(0,255,65,.2)}
+.stats-info{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.stat-item{text-align:center;padding:12px 8px;background:rgba(0,255,65,.05);border:1px solid rgba(0,255,65,.2);border-radius:8px;transition:all .3s ease}
+.stat-item:hover{transform:translateY(-3px);box-shadow:0 5px 20px rgba(0,255,65,.3)}
+.stat-label{font-size:9px;color:#00ff41;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;opacity:.7}
+.stat-value{font-size:24px;font-weight:bold;color:#00ff41;text-shadow:0 0 10px #00ff41}
+.stat-win{color:#00ff41;text-shadow:0 0 15px #00ff41}
+.stat-loss{color:#ff0055;text-shadow:0 0 15px #ff0055}
+.stat-streak{color:#ffaa00;text-shadow:0 0 15px #ffaa00}
+
+.table-container{background:linear-gradient(135deg,rgba(0,255,65,.05) 0%,rgba(0,100,255,.05) 100%);border:1px solid rgba(0,255,65,.3);border-radius:12px;overflow:hidden;box-shadow:0 0 20px rgba(0,255,65,.2)}
+table{width:100%;border-collapse:collapse}
+thead{background:linear-gradient(135deg,rgba(0,255,65,.2) 0%,rgba(0,100,255,.2) 100%)}
+th{padding:12px 6px;text-align:center;font-weight:600;color:#00ff41;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #00ff41}
+tbody tr{background:rgba(0,0,0,.3);transition:all .3s ease;border-bottom:1px solid rgba(0,255,65,.1)}
+tbody tr:hover{background:rgba(0,255,65,.1);transform:scale(1.01);box-shadow:0 0 15px rgba(0,255,65,.3)}
+td{padding:10px 6px;text-align:center;color:#00ff41;font-size:11px}
+.period-cell{font-family:'Courier New',monospace;font-size:10px;opacity:.7}
+.number-cell{font-size:22px;font-weight:bold}
+.color-cell{display:flex;justify-content:center;align-items:center;gap:4px}
+.color-dot{width:14px;height:14px;border-radius:50%;display:inline-block;border:2px solid rgba(0,255,65,.3);animation:dotPulse 2s infinite}
+@keyframes dotPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.red{background:#ff0055;box-shadow:0 0 8px #ff0055}
+.green{background:#00ff41;box-shadow:0 0 8px #00ff41}
+.violet{background:#aa00ff;box-shadow:0 0 8px #aa00ff}
+.result-cell{font-weight:bold;font-size:11px;padding:5px 8px;border-radius:4px}
+.result-win{color:#00ff41;background:rgba(0,255,65,.2);border:1px solid #00ff41;text-shadow:0 0 5px #00ff41}
+.result-loss{color:#ff0055;background:rgba(255,0,85,.2);border:1px solid #ff0055;text-shadow:0 0 5px #ff0055}
+
+@media (max-width:600px){
+.logo{font-size:22px}
+.title{font-size:10px;letter-spacing:1px}
+.stats-info{grid-template-columns:repeat(2,1fr);gap:10px}
+.prediction-result{font-size:40px;letter-spacing:2px}
+.pattern-grid{grid-template-columns:repeat(3,1fr)}
+th,td{padding:8px 4px;font-size:10px}
+.number-cell{font-size:18px}
+.stat-value{font-size:20px}
+}
 </style>
 </head>
 <body>
+<canvas class="matrix-bg" id="matrix"></canvas>
+<div class="container">
+<div class="header">
+<div class="scan-line"></div>
+<div class="logo">⚡ WINGO PRO</div>
+<div class="title">SIGNAL ANALYZER v4.0</div>
+</div>
 
-<h1>WinGo 3M Live Prediction</h1>
-<div id="prediction" class="pred">Loading...</div>
+<div class="input-container">
+<div class="input-group">
+<label class="input-label">Enter Period Number</label>
+<input type="text" id="periodInput" class="input-field" placeholder="e.g. 20251022001">
+</div>
+<div class="input-group">
+<label class="input-label">Enter Result (0-9)</label>
+<input type="number" id="resultInput" class="input-field" min="0" max="9" placeholder="0-9">
+</div>
+<div class="btn-group">
+<button class="btn" onclick="addEntry()">Add Entry</button>
+<button class="btn btn-secondary" onclick="nextPeriod()">Next Period</button>
+</div>
+</div>
 
+<div class="prediction-container">
+<div class="prediction-header"><h3>🔮 NEXT PREDICTION</h3></div>
+<div class="prediction-content">
+<div class="prediction-result" id="currPred"><span class="prediction-big">WAITING</span></div>
+<div class="confidence-bar"><div class="confidence-fill" id="confBar" style="width:0%"></div></div>
+<div class="confidence-label" id="confLabel">ENTER DATA TO START</div>
+</div>
+</div>
+
+<div class="pattern-analysis">
+<div class="pattern-title">📊 PATTERN ANALYSIS (11-15 POSITION)</div>
+<div class="pattern-grid">
+<div class="pattern-item" id="p11">
+<div class="pattern-label">11th</div>
+<div class="pattern-value">-</div>
+</div>
+<div class="pattern-item" id="p12">
+<div class="pattern-label">12th</div>
+<div class="pattern-value">-</div>
+</div>
+<div class="pattern-item" id="p13">
+<div class="pattern-label">13th</div>
+<div class="pattern-value">-</div>
+</div>
+<div class="pattern-item" id="p14">
+<div class="pattern-label">14th</div>
+<div class="pattern-value">-</div>
+</div>
+<div class="pattern-item" id="p15">
+<div class="pattern-label">15th</div>
+<div class="pattern-value">-</div>
+</div>
+</div>
+<div style="text-align:center;color:#ffaa00;font-size:11px;margin-top:10px" id="patternInfo">
+Pattern shows W/L streak in positions 11-15
+</div>
+</div>
+
+<div class="stats-container">
+<div class="stats-info">
+<div class="stat-item"><div class="stat-label">Win</div><div class="stat-value stat-win" id="wc">0</div></div>
+<div class="stat-item"><div class="stat-label">Loss</div><div class="stat-value stat-loss" id="lc">0</div></div>
+<div class="stat-item"><div class="stat-label">Total</div><div class="stat-value" id="tc">0</div></div>
+<div class="stat-item"><div class="stat-label">Accuracy</div><div class="stat-value" id="wr">0%</div></div>
+<div class="stat-item"><div class="stat-label">Max Win</div><div class="stat-value stat-streak" id="mw">0</div></div>
+<div class="stat-item"><div class="stat-label">Max Loss</div><div class="stat-value stat-streak" id="ml">0</div></div>
+</div>
+</div>
+
+<div class="table-container">
 <table>
-  <thead>
-    <tr>
-      <th>Round</th>
-      <th>Number</th>
-      <th>Result</th>
-      <th>Prediction</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-  <tbody id="history"><tr><td colspan="5">Loading...</td></tr></tbody>
+<thead><tr><th>Period</th><th>Number</th><th>Size</th><th>Color</th><th>Result</th></tr></thead>
+<tbody id="tb"><tr><td colspan="5" style="color:#00ff41;padding:20px">ENTER YOUR FIRST ENTRY</td></tr></tbody>
 </table>
+</div>
+</div>
 
 <script>
-const API_URL = "https://draw.ar-lottery01.com/WinGo/WinGo_3M/GetHistoryIssuePage.json";
-let allHistory = []; // সব হিস্ট্রি রাখার জন্য
-let lastPrediction = null;
+const c=document.getElementById('matrix'),ctx=c.getContext('2d');
+c.width=window.innerWidth;c.height=window.innerHeight;
+const chars='01',fontSize=14,cols=c.width/fontSize,drops=[];
+for(let i=0;i<cols;i++)drops[i]=1;
+function drawMatrix(){
+ctx.fillStyle='rgba(10,14,39,0.05)';ctx.fillRect(0,0,c.width,c.height);
+ctx.fillStyle='#00ff41';ctx.font=fontSize+'px monospace';
+for(let i=0;i<drops.length;i++){
+const t=chars[Math.floor(Math.random()*chars.length)];
+ctx.fillText(t,i*fontSize,drops[i]*fontSize);
+if(drops[i]*fontSize>c.height&&Math.random()>0.975)drops[i]=0;
+drops[i]++
+}
+}
+setInterval(drawMatrix,50);
 
-// localStorage থেকে আগের সেভড ডাটা লোড করো
-if(localStorage.getItem("wingo_history")){
-  allHistory = JSON.parse(localStorage.getItem("wingo_history"));
-  renderTable();
+let entries = [];
+let currentPrediction = null;
+let lastPeriod = '';
+
+function getSize(num) {
+return parseInt(num) >= 5 ? 'Big' : 'Small';
 }
 
-// প্রতি আপডেটে নতুন 10 রাউন্ড এনে merge করো
-async function fetchData(){
-  try{
-    const res = await fetch(`${API_URL}?ts=${Date.now()}`);
-    const data = await res.json();
-    const list = data.data;
-
-    if(!Array.isArray(list)) return;
-
-    // নতুন রাউন্ড গুলো অ্যাড করো
-    list.forEach(item=>{
-      if(!allHistory.find(h=>h.issue===item.issue)){
-        const result = Number(item.number)>=5 ? "BIG" : "SMALL";
-        allHistory.unshift({
-          issue:item.issue,
-          number:Number(item.number),
-          result:result
-        });
-      }
-    });
-
-    // সর্বোচ্চ ২০০ টা রেকর্ড রাখো
-    if(allHistory.length>200) allHistory = allHistory.slice(0,200);
-
-    // localStorage এ সেভ করো
-    localStorage.setItem("wingo_history",JSON.stringify(allHistory));
-
-    renderTable();
-    makePrediction();
-
-  }catch(err){
-    console.error("Fetch error:",err);
-  }
+function getColors(num) {
+let colors = [];
+num = parseInt(num);
+if (num === 0) { colors.push('red'); colors.push('violet'); }
+else if (num === 5) { colors.push('green'); colors.push('violet'); }
+else if (num % 2 === 0) colors.push('red');
+else colors.push('green');
+return colors;
 }
 
-// প্রেডিকশন লজিক (Momentum / Reversal)
-function makePrediction(){
-  if(allHistory.length<2) return;
-  const [last,prev] = allHistory;
-  let prediction;
-  if(last.result===prev.result){
-    prediction = last.result==="BIG"?"SMALL":"BIG"; // Reversal
-  }else{
-    prediction = last.result; // Momentum
-  }
-  lastPrediction = prediction;
-  document.getElementById("prediction").innerHTML =
-    `Next Prediction ➜ <b>${prediction}</b>`;
+function analyzePrediction(history) {
+if (history.length < 1) return { pred: 'Big', conf: 50 };
+let sizeHistory = history.map(e => e.size);
+let cs = 0, cb = 0;
+for (let i = 0; i < sizeHistory.length; i++) {
+if (sizeHistory[i] === 'Small') { cs++; cb = 0; }
+else { cb++; cs = 0; }
+}
+let pred = '';
+let conf = 50;
+if (cs >= 5) { pred = 'Big'; conf = 85 + cs * 2; }
+else if (cb >= 5) { pred = 'Small'; conf = 85 + cb * 2; }
+else if (cs === 4) { pred = 'Big'; conf = 78; }
+else if (cb === 4) { pred = 'Small'; conf = 78; }
+else if (cs === 3) { pred = 'Big'; conf = 68; }
+else if (cb === 3) { pred = 'Small'; conf = 68; }
+else { pred = sizeHistory[0] === 'Big' ? 'Small' : 'Big'; conf = 55 + Math.random() * 10; }
+conf = Math.min(98, Math.max(50, Math.round(conf)));
+return { pred, conf };
 }
 
-// টেবিল রেন্ডার
-function renderTable(){
-  const tbody = document.getElementById("history");
-  tbody.innerHTML = "";
-  allHistory.forEach((h,i)=>{
-    const prev = allHistory[i+1];
-    const predicted = prev?prev.prediction:lastPrediction;
-    const isCorrect = predicted && predicted===h.result;
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${h.issue}</td>
-      <td>${h.number}</td>
-      <td>${h.result}</td>
-      <td>${predicted||"-"}</td>
-      <td>${i===0?"LIVE":(isCorrect?"<span class='ok'>✅</span>":"<span class='wrong'>❌</span>")}</td>
-    `;
-    tbody.appendChild(tr);
-  });
+function analyzePattern() {
+if (entries.length < 11) {
+for (let i = 11; i <= 15; i++) {
+const elem = document.getElementById(`p${i}`);
+if (elem) {
+elem.classList.remove('pattern-highlight');
+elem.querySelector('.pattern-value').textContent = '-';
+}
+}
+document.getElementById('patternInfo').textContent = 'Need at least 11 entries for pattern analysis';
+return;
+}
+let patternData = [];
+for (let i = 10; i <= 14; i++) {
+if (entries[i] && entries[i].predResult) {
+patternData.push(entries[i].predResult);
+}
+}
+for (let i = 11; i <= 15; i++) {
+const elem = document.getElementById(`p${i}`);
+const idx = i - 11;
+if (elem && patternData[idx]) {
+const val = patternData[idx];
+elem.querySelector('.pattern-value').textContent = val === 'WIN' ? 'W' : 'L';
+if (val === 'WIN') {
+elem.querySelector('.pattern-value').style.color = '#00ff41';
+elem.querySelector('.pattern-value').style.textShadow = '0 0 10px #00ff41';
+} else {
+elem.querySelector('.pattern-value').style.color = '#ff0055';
+elem.querySelector('.pattern-value').style.textShadow = '0 0 10px #ff0055';
+}
+elem.classList.add('pattern-highlight');
+} else if (elem) {
+elem.classList.remove('pattern-highlight');
+elem.querySelector('.pattern-value').textContent = '-';
+}
+}
+let streakInfo = '';
+let currentStreak = 1;
+let lastResult = patternData[0];
+for (let i = 1; i < patternData.length; i++) {
+if (patternData[i] === lastResult) {
+currentStreak++;
+} else {
+streakInfo += `${currentStreak}${lastResult === 'WIN' ? 'W' : 'L'} `;
+currentStreak = 1;
+lastResult = patternData[i];
+}
+}
+if (patternData.length > 0) {
+streakInfo += `${currentStreak}${lastResult === 'WIN' ? 'W' : 'L'}`;
+document.getElementById('patternInfo').textContent = `Pattern: ${streakInfo}`;
+}
 }
 
-// প্রতি ৩ মিনিট ২ সেকেন্ড পর আপডেট
-setInterval(fetchData,182000);
-fetchData();
+function updateDisplay() {
+const tb = document.getElementById('tb');
+tb.innerHTML = '';
+const displayLimit = Math.min(entries.length, 20);
+for (let idx = 0; idx < displayLimit; idx++) {
+const entry = entries[idx];
+const tr = document.createElement('tr');
+const tdp = document.createElement('td');
+tdp.className = 'period-cell';
+tdp.textContent = entry.period;
+const tdn = document.createElement('td');
+tdn.className = 'number-cell';
+const ns = document.createElement('span');
+const colors = getColors(entry.result);
+if (colors.includes('red')) {
+ns.style.color = '#ff0055';
+ns.style.textShadow = '0 0 10px #ff0055';
+} else if (colors.includes('green')) {
+ns.style.color = '#00ff41';
+ns.style.textShadow = '0 0 10px #00ff41';
+}
+if (colors.includes('violet')) {
+ns.style.color = '#aa00ff';
+ns.style.textShadow = '0 0 10px #aa00ff';
+}
+ns.textContent = entry.result;
+tdn.appendChild(ns);
+const tds = document.createElement('td');
+tds.textContent = entry.size;
+const tdc = document.createElement('td');
+tdc.className = 'color-cell';
+colors.forEach(c => {
+const dt = document.createElement('span');
+dt.className = `color-dot ${c}`;
+tdc.appendChild(dt);
+});
+const tdr = document.createElement('td');
+if (entry.predResult) {
+if (entry.predResult === 'WIN') {
+tdr.className = 'result-cell result-win';
+tdr.textContent = '✓ WIN';
+} else {
+tdr.className = 'result-cell result-loss';
+tdr.textContent = '✗ LOSS';
+}
+} else {
+tdr.textContent = '-';
+}
+tr.appendChild(tdp);
+tr.appendChild(tdn);
+tr.appendChild(tds);
+tr.appendChild(tdc);
+tr.appendChild(tdr);
+tb.appendChild(tr);
+}
+updateStats();
+updatePrediction();
+analyzePattern();
+}
+
+function updateStats() {
+let wins = 0, losses = 0;
+entries.forEach(e => {
+if (e.predResult === 'WIN') wins++;
+if (e.predResult === 'LOSS') losses++;
+});
+const total = wins + losses;
+const winRate = total > 0 ? Math.round((wins / total) * 100) : 0;
+let maxWin = 0, maxLoss = 0, curWin = 0, curLoss = 0;
+entries.forEach(e => {
+if (e.predResult === 'WIN') {
+curWin++;
+if (curLoss > maxLoss) maxLoss = curLoss;
+curLoss = 0;
+} else if (e.predResult === 'LOSS') {
+curLoss++;
+if (curWin > maxWin) maxWin = curWin;
+curWin = 0;
+}
+});
+if (curWin > maxWin) maxWin = curWin;
+if (curLoss > maxLoss) maxLoss = curLoss;
+document.getElementById('wc').textContent = wins;
+document.getElementById('lc').textContent = losses;
+document.getElementById('tc').textContent = total;
+document.getElementById('wr').textContent = winRate + '%';
+document.getElementById('mw').textContent = maxWin;
+document.getElementById('ml').textContent = maxLoss;
+}
+
+function updatePrediction() {
+const pred = analyzePrediction(entries);
+currentPrediction = pred;
+const cr = document.getElementById('currPred');
+const cb = document.getElementById('confBar');
+const cl = document.getElementById('confLabel');
+cr.innerHTML = `<span class="prediction-${pred.pred.toLowerCase()}">${pred.pred}</span>`;
+cb.style.width = pred.conf + '%';
+if (pred.conf >= 70) {
+cl.innerHTML = '<span class="confidence-high">HIGH CONFIDENCE</span>';
+} else {
+cl.innerHTML = '<span class="confidence-low">LOW CONFIDENCE</span>';
+}
+}
+
+function addEntry() {
+const periodInput = document.getElementById('periodInput');
+const resultInput = document.getElementById('resultInput');
+const period = periodInput.value.trim();
+const result = resultInput.value.trim();
+if (!period || !result) {
+alert('Please enter both Period and Result');
+return;
+}
+if (result < 0 || result > 9) {
+alert('Result must be between 0-9');
+return;
+}
+const size = getSize(result);
+let predResult = null;
+if (currentPrediction && entries.length > 0) {
+predResult = currentPrediction.pred === size ? 'WIN' : 'LOSS';
+if (entries.length > 0) {
+entries[0].predResult = predResult;
+}
+}
+entries.unshift({
+period: period,
+result: result,
+size: size,
+predResult: null
+});
+lastPeriod = period;
+resultInput.value = '';
+updateDisplay();
+}
+
+function nextPeriod() {
+const periodInput = document.getElementById('periodInput');
+if (!lastPeriod) {
+alert('Please enter the first period number');
+return;
+}
+const nextNum = parseInt(lastPeriod) + 1;
+periodInput.value = nextNum;
+document.getElementById('resultInput').focus();
+}
 </script>
 </body>
 </html>
